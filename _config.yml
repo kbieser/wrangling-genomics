@@ -90,3 +90,5 @@ exclude:
 highlighter: rouge
 
 remote_theme: carpentries/carpentries-theme
+
+theme: jekyll-theme-cayman
