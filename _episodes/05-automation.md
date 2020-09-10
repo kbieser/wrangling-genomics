@@ -14,7 +14,7 @@ keypoints:
 # What is a shell script?
 
 You wrote a simple shell script in a [previous lesson](http://www.datacarpentry.org/shell-genomics/05-writing-scripts/) that we used to extract bad reads from our
-FASTQ files and put them into a new file. 
+FASTQ files and put them into a new file.
 
 Here's the script you wrote:
 
@@ -26,19 +26,19 @@ echo "Script finished!"
 {: .bash}
 
 That script was only two lines long, but shell scripts can be much more complicated
-than that and can be used to perform a large number of operations on one or many 
+than that and can be used to perform a large number of operations on one or many
 files. This saves you the effort of having to type each of those commands over for
-each of your data files and makes your work less error-prone and more reproducible. 
+each of your data files and makes your work less error-prone and more reproducible.
 For example, the variant calling workflow we just carried out had about eight steps
-where we had to type a command into our terminal. Most of these commands were pretty 
+where we had to type a command into our terminal. Most of these commands were pretty
 long. If we wanted to do this for all six of our data files, that would be forty-eight
 steps. If we had 50 samples (a more realistic number), it would be 400 steps! You can
 see why we want to automate this.
 
-We've also used `for` loops in previous lessons to iterate one or two commands over multiple input files. 
+We've also used `for` loops in previous lessons to iterate one or two commands over multiple input files.
 In these `for` loops, the filename was defined as a variable in the `for` statement, which enabled you to run the loop on multiple files. We will be using variable assignments like this in our new shell scripts.
 
-Here's the `for` loop you wrote for unzipping `.zip` files: 
+Here's the `for` loop you wrote for unzipping `.zip` files:
 
 ~~~
 $ for filename in *.zip
@@ -57,7 +57,7 @@ $ for infile in *_1.fastq.gz
 >   trimmomatic PE ${infile} ${base}_2.fastq.gz \
 >                ${base}_1.trim.fastq.gz ${base}_1un.trim.fastq.gz \
 >                ${base}_2.trim.fastq.gz ${base}_2un.trim.fastq.gz \
->                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15 
+>                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15
 > done
 ~~~
 {: .bash}
@@ -83,7 +83,7 @@ directory called `scripts/`. Previously, we used
 $ mkdir -p ~/dc_workshop/scripts
 $ cd ~/dc_workshop/scripts
 $ touch read_qc.sh
-$ ls 
+$ ls
 ~~~
 {: .bash}
 
@@ -100,7 +100,7 @@ $ nano read_qc.sh
 ~~~
 {: .bash}
 
-**Enter the following pieces of code into your shell script (not into your terminal prompt).**
+**Enter the following pieces of code into your shell script nano (not into your terminal prompt).**
 
 Our first line will ensure that our script will exit if an error occurs, and is a good idea to include at the beginning of your scripts. The second line will move us into the `untrimmed_fastq/` directory when we run our script.
 
@@ -111,7 +111,7 @@ cd ~/dc_workshop/data/untrimmed_fastq/
 {: .output}
 
 These next two lines will give us a status message to tell us that we are currently running FastQC, then will run FastQC
-on all of the files in our current directory with a `.fastq` extension. 
+on all of the files in our current directory with a `.fastq` extension.
 
 ~~~
 echo "Running FastQC ..."
@@ -127,7 +127,7 @@ mkdir -p ~/dc_workshop/results/fastqc_untrimmed_reads
 {: .output}
 
 Our next three lines first give us a status message to tell us we are saving the results from FastQC, then moves all of the files
-with a `.zip` or a `.html` extension to the directory we just created for storing our FastQC results. 
+with a `.zip` or a `.html` extension to the directory we just created for storing our FastQC results.
 
 ~~~
 echo "Saving FastQC results..."
@@ -155,7 +155,7 @@ for filename in *.zip
 ~~~
 {: .output}
 
-Next we concatenate all of our summary files into a single output file, with a status message to remind ourselves that this is 
+Next we concatenate all of our summary files into a single output file, with a status message to remind ourselves that this is
 what we're doing.
 
 ~~~
@@ -165,7 +165,7 @@ cat */summary.txt > ~/dc_workshop/docs/fastqc_summaries.txt
 {: .output}
 
 > ## Using `echo` statements
-> 
+>
 > We've used `echo` statements to add progress statements to our script. Our script will print these statements
 > as it is running and therefore we will be able to see how far our script has progressed.
 >
@@ -214,13 +214,13 @@ Approx 10% complete for SRR2584866.fastq
 Approx 15% complete for SRR2584866.fastq
 Approx 20% complete for SRR2584866.fastq
 Approx 25% complete for SRR2584866.fastq
-. 
-. 
-. 
+.
+.
+.
 ~~~
 {: .output}
 
-For each of your sample files, FastQC will ask if you want to replace the existing version with a new version. This is 
+For each of your sample files, FastQC will ask if you want to replace the existing version with a new version. This is
 because we have already run FastQC on this samples files and generated all of the outputs. We are now doing this again using
 our scripts. Go ahead and select `A` each time this message appears. It will appear once per sample file (six times total).
 
@@ -284,16 +284,16 @@ for fq1 in ~/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
     sorted_bam=~/dc_workshop/results/bam/${base}.aligned.sorted.bam
     raw_bcf=~/dc_workshop/results/bcf/${base}_raw.bcf
     variants=~/dc_workshop/results/bcf/${base}_variants.vcf
-    final_variants=~/dc_workshop/results/vcf/${base}_final_variants.vcf 
+    final_variants=~/dc_workshop/results/vcf/${base}_final_variants.vcf
 
     bwa mem $genome $fq1 $fq2 > $sam
     samtools view -S -b $sam > $bam
     samtools sort -o $sorted_bam $bam
     samtools index $sorted_bam
     bcftools mpileup -O b -o $raw_bcf -f $genome $sorted_bam
-    bcftools call --ploidy 1 -m -v -o $variants $raw_bcf 
+    bcftools call --ploidy 1 -m -v -o $variants $raw_bcf
     vcfutils.pl varFilter $variants > $final_variants
-   
+
     done
 ~~~
 {: .output}
@@ -301,29 +301,29 @@ for fq1 in ~/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
 Now, we'll go through each line in the script before running it.
 
 First, notice that we change our working directory so that we can create new results subdirectories
-in the right location. 
+in the right location.
 
 ~~~
 cd ~/dc_workshop/results
 ~~~
 {: .output}
 
-Next we tell our script where to find the reference genome by assigning the `genome` variable to 
-the path to our reference genome: 
+Next we tell our script where to find the reference genome by assigning the `genome` variable to
+the path to our reference genome:
 
 ~~~
 genome=~/dc_workshop/data/ref_genome/ecoli_rel606.fasta
 ~~~
 {: .output}
 
-Next we index our reference genome for BWA: 
+Next we index our reference genome for BWA:
 
 ~~~
 bwa index $genome
 ~~~
 {: .output}
 
-And create the directory structure to store our results in: 
+And create the directory structure to store our results in:
 
 ~~~
 mkdir -p sam bam bcf vcf
@@ -331,8 +331,8 @@ mkdir -p sam bam bcf vcf
 {: .output}
 
 Then, we use a loop to run the variant calling workflow on each of our FASTQ files. The full list of commands
-within the loop will be executed once for each of the FASTQ files in the 
-`data/trimmed_fastq_small/` directory. 
+within the loop will be executed once for each of the FASTQ files in the
+`data/trimmed_fastq_small/` directory.
 We will include a few `echo` statements to give us status updates on our progress.
 
 The first thing we do is assign the name of the FASTQ file we're currently working with to a variable called `fq1` and
@@ -346,7 +346,7 @@ for fq1 in ~/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
 {: .bash}
 
 We then extract the base name of the file (excluding the path and `.fastq` extension) and assign it
-to a new variable called `base`. 
+to a new variable called `base`.
 ~~~
     base=$(basename $fq1 _1.trim.sub.fastq)
     echo "base name is $base"
@@ -360,7 +360,7 @@ We can use the `base` variable to access both the `base_1.fastq` and `base_2.fas
     #input fastq files
     fq1=~/dc_workshop/data/trimmed_fastq_small/${base}_1.trim.sub.fastq
     fq2=~/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
-    
+
     # output files
     sam=~/dc_workshop/results/sam/${base}.aligned.sam
     bam=~/dc_workshop/results/bam/${base}.aligned.bam
@@ -391,7 +391,7 @@ And finally, the actual workflow steps:
 3) sort the BAM file:
 
 ~~~
-    samtools sort -o $sorted_bam $bam 
+    samtools sort -o $sorted_bam $bam
 ~~~
 {: .output}
 
@@ -405,14 +405,14 @@ And finally, the actual workflow steps:
 5) calculate the read coverage of positions in the genome:
 
 ~~~
-    bcftools mpileup -O b -o $raw_bcf -f $genome $sorted_bam 
+    bcftools mpileup -O b -o $raw_bcf -f $genome $sorted_bam
 ~~~
 {: .output}
 
 6) call SNPs with bcftools:
 
 ~~~
-    bcftools call --ploidy 1 -m -v -o $variants $raw_bcf 
+    bcftools call --ploidy 1 -m -v -o $variants $raw_bcf
 ~~~
 {: .output}
 
@@ -426,9 +426,9 @@ And finally, the actual workflow steps:
 
 
 > ## Exercise
-> It's a good idea to add comments to your code so that you (or a collaborator) can make sense of what you did later. 
+> It's a good idea to add comments to your code so that you (or a collaborator) can make sense of what you did later.
 > Look through your existing script. Discuss with a neighbor where you should add comments. Add comments (anything following
-> a `#` character will be interpreted as a comment, bash will not try to run these comments as code). 
+> a `#` character will be interpreted as a comment, bash will not try to run these comments as code).
 {: .challenge}
 
 
@@ -442,16 +442,16 @@ $ bash run_variant_calling.sh
 
 > ## Exercise
 >
-> The samples we just performed variant calling on are part of the long-term evolution experiment introduced at the 
+> The samples we just performed variant calling on are part of the long-term evolution experiment introduced at the
 > beginning of our variant calling workflow. From the metadata table, we know that SRR2589044 was from generation 5000,
 > SRR2584863 was from generation 15000, and SRR2584866 was from generation 50000. How did the number of mutations per sample change
 > over time? Examine the metadata table. What is one reason the number of mutations may have changed the way they did?
-> 
-> Hint: You can find a copy of the output files for the subsampled trimmed FASTQ file variant calling in the 
+>
+> Hint: You can find a copy of the output files for the subsampled trimmed FASTQ file variant calling in the
 > `~/.solutions/wrangling-solutions/variant_calling_auto/` directory.
-> 
+>
 >> ## Solution
->> 
+>>
 >> ~~~
 >> $ for infile in ~/dc_workshop/results/vcf/*_final_variants.vcf
 >> > do
@@ -460,20 +460,17 @@ $ bash run_variant_calling.sh
 >> > done
 >> ~~~
 >> {: .bash}
->> 
->> For SRR2589044 from generation 5000 there were 10 mutations, for SRR2584863 from generation 15000 there were 25 mutations, 
+>>
+>> For SRR2589044 from generation 5000 there were 10 mutations, for SRR2584863 from generation 15000 there were 25 mutations,
 >> and SRR2584866 from generation 766 mutations. In the last generation, a hypermutable phenotype had evolved, causing this
->> strain to have more mutations. 
+>> strain to have more mutations.
 > {: .solution}
 {: .challenge}
 
 
 > ## Bonus Exercise
-> 
-> If you have time after completing the previous exercise, use `run_variant_calling.sh` to run the variant calling pipeline 
-> on the full-sized trimmed FASTQ files. You should have a copy of these already in `~/dc_workshop/data/trimmed_fastq`, but if 
+>
+> If you have time after completing the previous exercise, use `run_variant_calling.sh` to run the variant calling pipeline
+> on the full-sized trimmed FASTQ files. You should have a copy of these already in `~/dc_workshop/data/trimmed_fastq`, but if
 > you don't, there is a copy in `~/.solutions/wrangling-solutions/trimmed_fastq`. Does the number of variants change per sample?
-{: .challenge} 
-
-
-
+{: .challenge}

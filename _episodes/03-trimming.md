@@ -37,18 +37,18 @@ $ trimmomatic
 
 Which will give you the following output:
 ~~~
-Usage: 
+Usage:
        PE [-version] [-threads <threads>] [-phred33|-phred64] [-trimlog <trimLogFile>] [-summary <statsSummaryFile>] [-quiet] [-validatePairs] [-basein <inputBase> | <inputFile1> <inputFile2>] [-baseout <outputBase> | <outputFile1P> <outputFile1U> <outputFile2P> <outputFile2U>] <trimmer1>...
-   or: 
+   or:
        SE [-version] [-threads <threads>] [-phred33|-phred64] [-trimlog <trimLogFile>] [-summary <statsSummaryFile>] [-quiet] <inputFile> <outputFile> <trimmer1>...
-   or: 
+   or:
        -version
 ~~~
 {: .output}
 
 This output shows us that we must first specify whether we have paired end (`PE`) or single end (`SE`) reads.
 Next, we specify what flag we would like to run. For example, you can specify `threads` to indicate the number of
-processors on your computer that you want Trimmomatic to use. In most cases using multiple threads (processors) can help to run the trimming faster. These flags are not necessary, but they can give you more control over the command. The flags are followed by positional arguments, meaning the order in which you specify them is important. 
+processors on your computer that you want Trimmomatic to use. In most cases using multiple threads (processors) can help to run the trimming faster. These flags are not necessary, but they can give you more control over the command. The flags are followed by positional arguments, meaning the order in which you specify them is important.
 In paired end mode, Trimmomatic expects the two input files, and then the names of the output files. These files are described below. While, in single end mode, Trimmomatic will expect 1 file as input, after which you can enter the optional settings and lastly the name of the output file.
 
 | option    | meaning |
@@ -106,8 +106,8 @@ In this example, we've told Trimmomatic:
 
 
 
-> ## Multi-line commands 
-> Some of the commands we ran in this lesson are long! When typing a long 
+> ## Multi-line commands
+> Some of the commands we ran in this lesson are long! When typing a long
 > command into your terminal, you can use the `\` character
 > to separate code chunks onto separate lines. This can make your code more readable.
 {: .callout}
@@ -123,12 +123,12 @@ $ cd ~/dc_workshop/data/untrimmed_fastq
 ~~~
 {: .bash}
 
-We are going to run Trimmomatic on one of our paired-end samples. 
-While using FastQC we saw that Nextera adapters were present in our samples. 
+We are going to run Trimmomatic on one of our paired-end samples.
+While using FastQC we saw that Nextera adapters were present in our samples.
 The adapter sequences came with the installation of trimmomatic, so we will first copy these sequences into our current directory.
 
 ~~~
-$ cp ~/.miniconda3/pkgs/trimmomatic-0.38-0/share/trimmomatic-0.38-0/adapters/NexteraPE-PE.fa .
+$ cp /opt/conda/share/trimmomatic-0.38-0/adapters/NexteraPE-PE.fa ./
 ~~~
 {: .bash}
 
@@ -141,7 +141,7 @@ this trimming step. This command will take a few minutes to run.
 $ trimmomatic PE SRR2589044_1.fastq.gz SRR2589044_2.fastq.gz \
                 SRR2589044_1.trim.fastq.gz SRR2589044_1un.trim.fastq.gz \
                 SRR2589044_2.trim.fastq.gz SRR2589044_2un.trim.fastq.gz \
-                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15 
+                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15
 ~~~
 {: .bash}
 
@@ -193,8 +193,8 @@ SRR2589044_1.trim.fastq.gz  SRR2589044_2.fastq.gz         SRR2589044_2un.trim.fa
 ~~~
 {: .output}
 
-The output files are also FASTQ files. It should be smaller than our
-input file, because we've removed reads. We can confirm this:
+The output files are also FASTQ files. The output .trim files should be smaller than our
+input file, because we've removed reads. The output un.trim files are the smallest because those are sequences that we removed because their mate was a terrible read. The absolute worst reads are now gone. It's partner ended up in those un.trim files. We can confirm this:
 
 ~~~
 $ ls SRR2589044* -l -h
@@ -216,14 +216,101 @@ We've just successfully run Trimmomatic on one of our FASTQ files!
 However, there is some bad news. Trimmomatic can only operate on
 one sample at a time and we have more than one sample. The good news
 is that we can use a `for` loop to iterate through our sample files
-quickly! 
+quickly!
 
 We unzipped one of our files before to work with it, let's compress it again before we run our for loop.
 
 ~~~
-gzip SRR2584863_1.fastq 
+gzip SRR2584863_1.fastq
 ~~~
 {: .bash}
+
+~~~
+$ for infile in *_1.fastq.gz
+> do
+>  echo ${infile}
+> done
+~~~
+{: .bash}
+
+~~~
+bash script.sh
+~~~
+{: .bash}
+
+~~~
+$ for infile in *_1.fastq.gz
+> do
+>  echo ${infile}
+>  echo "this is a line that isn't a filename"
+> done
+~~~
+{: .bash}
+
+~~~
+bash script.sh
+~~~
+{: .bash}
+
+Consider the original trimmomatic command, it had 2 inputs and 4 output files and our loop currently is only aware of 1 of our 2 input files. We need to think of a way to make it aware of all of the others. What do the file names have in common?
+
+~~~
+ls -lh
+~~~
+
+It looks like there is a common prefix or base to the name. So we can manipulate the content of the variable that we already know called infile. We can manipulate the variable called infile and saved those manipulated contents to a new variable.
+
+Show them basename. Show that it rips the suffix off
+
+~~~
+basename SRR2584863_1.fastq.gz _1.fastq.gz
+~~~
+{: .bash}
+
+How can we get the output of basename to get stored in a new variable. We can use a special syntax with $() to start a command, run something, and then get back to finishing what it started. Make a new variable  and do a subshell of it. The output of what is run in () gets stored in prefix.
+~~~
+prefix=$(basename SRR2584863_1.fastq.gz _1.fastq.gz)
+# Check the contents of prefix with echo.
+
+echo ${prefix}
+~~~
+{: .bash}
+
+~~~
+bash script.sh
+~~~
+{: .bash}
+
+We can combine this with an existing variable as well. Let's go to the script we are writing.
+
+~~~
+$ for infile in *_1.fastq.gz
+> do
+>  echo ${infile}
+>  base=$(basename ${infile} _1.fastq.gz)
+>  echo ${base}
+> done
+~~~
+{: .bash}
+
+~~~
+bash script.sh
+~~~
+{: .bash}
+
+Remember your history command? We had a pretty complicated trimmotatic command that we used and we want to substitute the variable in there. Let's remember what that command was. Who remembers what command shows us things we've already done? Look for the trimmomatic command in their history. history | grep trimmo
+
+~~~
+history
+~~~
+Nano is bad at copying and pasting. Scroll using arrow keys and use a \ return
+
+trimmomatic PE SRR2589044_1.fastq.gz SRR2589044_2.fastq.gz \
+               SRR2589044_1.trim.fastq.gz SRR2589044_1un.trim.fastq.gz \
+               SRR2589044_2.trim.fastq.gz SRR2589044_2un.trim.fastq.gz \
+               SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa
+
+We were going to replace the explicit parts with variables.
 
 ~~~
 $ for infile in *_1.fastq.gz
@@ -232,11 +319,14 @@ $ for infile in *_1.fastq.gz
 >   trimmomatic PE ${infile} ${base}_2.fastq.gz \
 >                ${base}_1.trim.fastq.gz ${base}_1un.trim.fastq.gz \
 >                ${base}_2.trim.fastq.gz ${base}_2un.trim.fastq.gz \
->                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15 
+>                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15
 > done
 ~~~
 {: .bash}
 
+~~~
+bash script.sh
+~~~
 
 Go ahead and run the for loop. It should take a few minutes for
 Trimmomatic to run for each of our six input files. Once it's done
@@ -259,14 +349,14 @@ SRR2584863_2un.trim.fastq.gz  SRR2589044_1.fastq.gz
 {: .output}
 
 > ## Exercise
-> We trimmed our fastq files with Nextera adapters, 
+> We trimmed our fastq files with Nextera adapters,
 > but there are other adapters that are commonly used.
 > What other adapter files came with Trimmomatic?
 >
 >
 >> ## Solution
 >> ~~~
->> $ ls ~/miniconda3/pkgs/trimmomatic-0.38-0/share/trimmomatic-0.38-0/adapters/
+>> $ ls /opt/conda/share/trimmomatic-0.38-0/adapters/
 >> ~~~
 >> {: .bash}
 >>
@@ -324,14 +414,14 @@ SRR2584863_2un.trim.fastq.gz  SRR2584866_2un.trim.fastq.gz  SRR2589044_2un.trim.
 >> $ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/data/trimmed_fastq/*.html ~/Desktop/fastqc_html/trimmed
 >> ~~~
 >> {: .bash}
->> 
+>>
 >> Then take a look at the html files in your browser.
->> 
+>>
 >> Remember to replace everything between the `@` and `:` in your scp
 >> command with your AWS instance number.
 >>
->> After trimming and filtering, our overall quality is much higher, 
->> we have a distribution of sequence lengths, and more samples pass 
+>> After trimming and filtering, our overall quality is much higher,
+>> we have a distribution of sequence lengths, and more samples pass
 >> adapter content. However, quality trimming is not perfect, and some
 >> programs are better at removing some sequences than others. Because our
 >> sequences still contain 3' adapters, it could be important to explore
