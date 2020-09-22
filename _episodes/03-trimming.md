@@ -119,7 +119,7 @@ In this example, we've told Trimmomatic:
 Now we will run Trimmomatic on our data. To begin, navigate to your `untrimmed_fastq` data directory:
 
 ~~~
-$ cd ~/dc_workshop/data/untrimmed_fastq
+$ cd ~/data/dc_workshop/data/untrimmed_fastq
 ~~~
 {: .bash}
 
@@ -202,12 +202,12 @@ $ ls SRR2589044* -l -h
 {: .bash}
 
 ~~~
--rw-rw-r-- 1 dcuser dcuser 124M Jul  6 20:22 SRR2589044_1.fastq.gz
--rw-rw-r-- 1 dcuser dcuser  94M Jul  6 22:33 SRR2589044_1.trim.fastq.gz
--rw-rw-r-- 1 dcuser dcuser  18M Jul  6 22:33 SRR2589044_1un.trim.fastq.gz
--rw-rw-r-- 1 dcuser dcuser 128M Jul  6 20:24 SRR2589044_2.fastq.gz
--rw-rw-r-- 1 dcuser dcuser  91M Jul  6 22:33 SRR2589044_2.trim.fastq.gz
--rw-rw-r-- 1 dcuser dcuser 271K Jul  6 22:33 SRR2589044_2un.trim.fastq.gz
+-rw-rw-r-- 1 gea_user gea_user 124M Jul  6 20:22 SRR2589044_1.fastq.gz
+-rw-rw-r-- 1 gea_user gea_user  94M Jul  6 22:33 SRR2589044_1.trim.fastq.gz
+-rw-rw-r-- 1 gea_user gea_user  18M Jul  6 22:33 SRR2589044_1un.trim.fastq.gz
+-rw-rw-r-- 1 gea_user gea_user 128M Jul  6 20:24 SRR2589044_2.fastq.gz
+-rw-rw-r-- 1 gea_user gea_user  91M Jul  6 22:33 SRR2589044_2.trim.fastq.gz
+-rw-rw-r-- 1 gea_user gea_user 271K Jul  6 22:33 SRR2589044_2un.trim.fastq.gz
 ~~~
 {: .output}
 
@@ -228,27 +228,17 @@ gzip SRR2584863_1.fastq
 ~~~
 $ for infile in *_1.fastq.gz
 > do
->  echo ${infile}
+> echo ${infile}
 > done
-~~~
-{: .bash}
-
-~~~
-bash script.sh
 ~~~
 {: .bash}
 
 ~~~
 $ for infile in *_1.fastq.gz
 > do
->  echo ${infile}
->  echo "this is a line that isn't a filename"
+> echo ${infile}
+> echo "this is a line that isn't a filename"
 > done
-~~~
-{: .bash}
-
-~~~
-bash script.sh
 ~~~
 {: .bash}
 
@@ -258,30 +248,24 @@ Consider the original trimmomatic command, it had 2 inputs and 4 output files an
 ls -lh
 ~~~
 
-It looks like there is a common prefix or base to the name. So we can manipulate the content of the variable that we already know called infile. We can manipulate the variable called infile and saved those manipulated contents to a new variable.
+It looks like there is a common suffix or base to the name. So we can manipulate the content of the variable that we already know called infile. We can manipulate the variable called infile and save those manipulated contents to a new variable.
 
-Show them basename. Show that it rips the suffix off
+Let's use basename to demonstrate that we can remove the suffix.
 
 ~~~
 basename SRR2584863_1.fastq.gz _1.fastq.gz
 ~~~
 {: .bash}
 
-How can we get the output of basename to get stored in a new variable. We can use a special syntax with $() to start a command, run something, and then get back to finishing what it started. Make a new variable  and do a subshell of it. The output of what is run in () gets stored in prefix.
+How can we get the output of basename to get stored in a new variable? We can use a special syntax with $() to start a command, run something, and then get back to finishing what it started. Let's make a new variable and do a subshell of it to see how it works. The output of what is run in () gets stored in prefix.
+
 ~~~
 prefix=$(basename SRR2584863_1.fastq.gz _1.fastq.gz)
-# Check the contents of prefix with echo.
-
 echo ${prefix}
 ~~~
 {: .bash}
 
-~~~
-bash script.sh
-~~~
-{: .bash}
-
-We can combine this with an existing variable as well. Let's go to the script we are writing.
+We can combine the basename command with our existing variable. Let's go to the script we are writing.
 
 ~~~
 $ for infile in *_1.fastq.gz
@@ -293,24 +277,31 @@ $ for infile in *_1.fastq.gz
 ~~~
 {: .bash}
 
+Remember your history command? We had a pretty complicated trimmomatic command that we used and we want to substitute the variable in there. Let's remember what that command was. Who remembers what command shows us things we've already done? Look for the trimmomatic command in their history.
+
 ~~~
-bash script.sh
+history | grep trimmomatic
 ~~~
 {: .bash}
 
-Remember your history command? We had a pretty complicated trimmotatic command that we used and we want to substitute the variable in there. Let's remember what that command was. Who remembers what command shows us things we've already done? Look for the trimmomatic command in their history. history | grep trimmo
+Copy your trimmomatic command and open nano.
 
 ~~~
-history
+nano
 ~~~
-Nano is bad at copying and pasting. Scroll using arrow keys and use a \ return
+{: .bash}
 
+Nano is unfortunately bad with copying and pasting. You will need to scroll by using arrow keys and use a \ return to get the lines in a readable format.
+
+~~~
 trimmomatic PE SRR2589044_1.fastq.gz SRR2589044_2.fastq.gz \
                SRR2589044_1.trim.fastq.gz SRR2589044_1un.trim.fastq.gz \
                SRR2589044_2.trim.fastq.gz SRR2589044_2un.trim.fastq.gz \
                SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa
+~~~
+{: .bash}
 
-We were going to replace the explicit parts with variables.
+Once it is copied in we are now going to convert it to our for loop by replacing the explicit parts with variables.
 
 ~~~
 $ for infile in *_1.fastq.gz
@@ -323,10 +314,6 @@ $ for infile in *_1.fastq.gz
 > done
 ~~~
 {: .bash}
-
-~~~
-bash script.sh
-~~~
 
 Go ahead and run the for loop. It should take a few minutes for
 Trimmomatic to run for each of our six input files. Once it's done
@@ -374,7 +361,7 @@ control process! Before we move on, let's move our trimmed FASTQ files
 to a new subdirectory within our `data/` directory.
 
 ~~~
-$ cd ~/dc_workshop/data/untrimmed_fastq
+$ cd ~/data/dc_workshop/data/untrimmed_fastq
 $ mkdir ../trimmed_fastq
 $ mv *.trim* ../trimmed_fastq
 $ cd ../trimmed_fastq
@@ -400,25 +387,12 @@ SRR2584863_2un.trim.fastq.gz  SRR2584866_2un.trim.fastq.gz  SRR2589044_2un.trim.
 >
 >> ## Solution
 >>
->> In your AWS terminal window do:
+>> In your Jupyter terminal window do:
 >>
 >> ~~~
->> $ fastqc ~/dc_workshop/data/trimmed_fastq/*.fastq*
->> ~~~
->> {: .bash}
->>
->> In a new tab in your terminal do:
->>
->> ~~~
->> $ mkdir ~/Desktop/fastqc_html/trimmed
->> $ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/data/trimmed_fastq/*.html ~/Desktop/fastqc_html/trimmed
+>> $ fastqc ~/data/dc_workshop/data/trimmed_fastq/*.fastq*
 >> ~~~
 >> {: .bash}
->>
->> Then take a look at the html files in your browser.
->>
->> Remember to replace everything between the `@` and `:` in your scp
->> command with your AWS instance number.
 >>
 >> After trimming and filtering, our overall quality is much higher,
 >> we have a distribution of sequence lengths, and more samples pass

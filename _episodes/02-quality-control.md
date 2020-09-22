@@ -51,8 +51,8 @@ Here we are using the `-p` option for `mkdir`. This option allows `mkdir` to cre
 
 It will take about 15 minutes to download the files. For our purposes, the data has already been stored in a folder to speed up the process. Choose either option.
 ~~~
-mkdir -p ~/dc_workshop/data/untrimmed_fastq/
-cd ~/dc_workshop/data/untrimmed_fastq
+mkdir -p ~/data/dc_workshop/data/untrimmed_fastq/
+cd ~/data/dc_workshop/data/untrimmed_fastq
 
 curl -O ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR258/004/SRR2589044/SRR2589044_1.fastq.gz
 curl -O ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR258/004/SRR2589044/SRR2589044_2.fastq.gz
@@ -68,7 +68,8 @@ curl -O ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR258/006/SRR2584866/SRR2584866_2.fa
 > If your workshop is short on time or the venue's internet connection is weak or unstable, learners can
 > avoid needing to download the data and instead use the data files provided in the `.backup/` directory.
 >
-> ~~~../
+> ~~~
+> $ cd ~/data
 > $ cp ~/data/.backup/untrimmed_fastq/*fastq.gz .
 > ~~~
 > {: .bash}
@@ -356,7 +357,7 @@ Here, we see positions within the read in which the boxes span a much wider rang
 We will now assess the quality of the reads that we downloaded. First, make sure you're still in the `untrimmed_fastq` directory
 
 ~~~
-$ cd ~/dc_workshop/data/untrimmed_fastq/
+$ cd ~/data/dc_workshop/data/untrimmed_fastq/
 ~~~
 {: .bash}
 
@@ -374,12 +375,12 @@ $ cd ~/dc_workshop/data/untrimmed_fastq/
 >> {: .bash}
 >>
 >> ~~~
->> -rw-rw-r-- 1 dcuser dcuser 545M Jul  6 20:27 SRR2584863_1.fastq
->> -rw-rw-r-- 1 dcuser dcuser 183M Jul  6 20:29 SRR2584863_2.fastq.gz
->> -rw-rw-r-- 1 dcuser dcuser 309M Jul  6 20:34 SRR2584866_1.fastq.gz
->> -rw-rw-r-- 1 dcuser dcuser 296M Jul  6 20:37 SRR2584866_2.fastq.gz
->> -rw-rw-r-- 1 dcuser dcuser 124M Jul  6 20:22 SRR2589044_1.fastq.gz
->> -rw-rw-r-- 1 dcuser dcuser 128M Jul  6 20:24 SRR2589044_2.fastq.gz
+>> -rw-rw-r-- 1 gea_user gea_user 545M Jul  6 20:27 SRR2584863_1.fastq
+>> -rw-rw-r-- 1 gea_user gea_user 183M Jul  6 20:29 SRR2584863_2.fastq.gz
+>> -rw-rw-r-- 1 gea_user gea_user 309M Jul  6 20:34 SRR2584866_1.fastq.gz
+>> -rw-rw-r-- 1 gea_user gea_user 296M Jul  6 20:37 SRR2584866_2.fastq.gz
+>> -rw-rw-r-- 1 gea_user gea_user 124M Jul  6 20:22 SRR2589044_1.fastq.gz
+>> -rw-rw-r-- 1 gea_user gea_user 128M Jul  6 20:24 SRR2589044_2.fastq.gz
 >> ~~~
 >> {: .output}
 >>
@@ -455,9 +456,9 @@ will move these
 output files into a new directory within our `results/` directory.
 
 ~~~
-$ mkdir -p ~/dc_workshop/results/fastqc_untrimmed_reads
-$ mv *.zip ~/dc_workshop/results/fastqc_untrimmed_reads/
-$ mv *.html ~/dc_workshop/results/fastqc_untrimmed_reads/
+$ mkdir -p ~/data/dc_workshop/results/fastqc_untrimmed_reads
+$ mv *.zip ~/data/dc_workshop/results/fastqc_untrimmed_reads/
+$ mv *.html ~/data/dc_workshop/results/fastqc_untrimmed_reads/
 ~~~
 {: .bash}
 
@@ -465,7 +466,7 @@ Now we can navigate into this results directory and do some closer
 inspection of our output files.
 
 ~~~
-$ cd ~/dc_workshop/results/fastqc_untrimmed_reads/
+$ cd ~/data/dc_workshop/results/fastqc_untrimmed_reads/
 ~~~
 {: .bash}
 
@@ -483,7 +484,7 @@ to transfer them to our local computers (i.e. your laptop). Since we are utlizin
 In the left hand side of your console, navigate to the .html files.
 
 ~~~
-dc_workshop/results/fastqc_untrimmed_reads
+data/dc_workshop/results/fastqc_untrimmed_reads
 ~~~
 
 ~~~
@@ -532,7 +533,7 @@ in your VICE terminal and make sure you're in
 our results subdirectory.   
 
 ~~~
-$ cd ~/dc_workshop/results/fastqc_untrimmed_reads/
+$ cd ~/data/dc_workshop/results/fastqc_untrimmed_reads/
 $ ls
 ~~~
 {: .bash}
@@ -701,10 +702,10 @@ us whether this sample passed, failed, or is borderline (`WARN`). Remember, to q
 We can make a record of the results we obtained for all our samples
 by concatenating all of our `summary.txt` files into a single file
 using the `cat` command. We'll call this `fastqc_summaries.txt` and move
-it to `~/dc_workshop/docs`.
+it to `~/data/dc_workshop/docs`.
 
 ~~~
-$ cat */summary.txt > ~/dc_workshop/docs/fastqc_summaries.txt
+$ cat */summary.txt > ~/data/dc_workshop/docs/fastqc_summaries.txt
 ~~~
 {: .bash}
 
