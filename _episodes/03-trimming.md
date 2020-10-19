@@ -1,7 +1,7 @@
 ---
 title: "Trimming and Filtering"
-teaching: 30
-exercises: 25
+teaching: 0
+exercises: 0
 questions:
 - "How can I get rid of sequence data that doesn't meet my quality standards?"
 objectives:
@@ -94,7 +94,7 @@ In this example, we've told Trimmomatic:
 | code   | meaning |
 | ------- | ---------- |
 | `PE` | that it will be taking a paired end file as input |
-| `-threads 4` | to use four computing threads to run (this will spead up our run) |
+| `-threads 4` | to use four computing threads to run (this will speed up our run) |
 | `SRR_1056_1.fastq` | the first input file name |
 | `SRR_1056_2.fastq` | the second input file name |
 | `SRR_1056_1.trimmed.fastq` | the output file for surviving pairs from the `_1` file |
@@ -234,6 +234,13 @@ $ for infile in *_1.fastq.gz
 {: .bash}
 
 ~~~
+SRR2584863_1.fastq.gz
+SRR2584866_1.fastq.gz
+SRR2589044_1.fastq.gz
+~~~
+{: .output}
+
+~~~
 $ for infile in *_1.fastq.gz
 > do
 > echo ${infile}
@@ -241,6 +248,16 @@ $ for infile in *_1.fastq.gz
 > done
 ~~~
 {: .bash}
+
+~~~
+SRR2584863_1.fastq.gz
+this is a line that isn't a filename
+SRR2584866_1.fastq.gz
+this is a line that isn't a filename
+SRR2589044_1.fastq.gz
+this is a line that isn't a filename
+~~~
+{: .output}
 
 Consider the original trimmomatic command, it had 2 inputs and 4 output files and our loop currently is only aware of 1 of our 2 input files. We need to think of a way to make it aware of all of the others. What do the file names have in common?
 
@@ -257,6 +274,11 @@ basename SRR2584863_1.fastq.gz _1.fastq.gz
 ~~~
 {: .bash}
 
+~~~
+SRR2584863
+~~~
+{: .output}
+
 How can we get the output of basename to get stored in a new variable? We can use a special syntax with $() to start a command, run something, and then get back to finishing what it started. Let's make a new variable and do a subshell of it to see how it works. The output of what is run in () gets stored in prefix.
 
 ~~~
@@ -264,6 +286,11 @@ prefix=$(basename SRR2584863_1.fastq.gz _1.fastq.gz)
 echo ${prefix}
 ~~~
 {: .bash}
+
+~~~
+SRR2584863
+~~~
+{: .output}
 
 We can combine the basename command with our existing variable. Let's go to the script we are writing.
 
@@ -276,6 +303,16 @@ $ for infile in *_1.fastq.gz
 > done
 ~~~
 {: .bash}
+
+~~~
+SRR2584863_1.fastq.gz
+SRR2584863
+SRR2584866_1.fastq.gz
+SRR2584866
+SRR2589044_1.fastq.gz
+SRR2589044
+~~~
+{: .output}
 
 Remember your history command? We had a pretty complicated trimmomatic command that we used and we want to substitute the variable in there. Let's remember what that command was. Who remembers what command shows us things we've already done? Look for the trimmomatic command in their history.
 
@@ -315,7 +352,25 @@ $ for infile in *_1.fastq.gz
 ~~~
 {: .bash}
 
-Go ahead and run the for loop. It should take a few minutes for
+Save the text file as trim.sh.
+
+Return to your terminal and navigate to:
+
+~~~
+$ cd ~/data/dc_workshop/data/untrimmed_fastq
+~~~
+{: .bash}
+
+Go ahead and run the for loop by copying and pasting in the for loop or by running the saved script.
+
+If you want to run the command from the save script, you first have to make the script executable.
+
+~~~
+chmod +x trim.sh
+~~~
+{: .bash}
+
+It should take a few minutes for
 Trimmomatic to run for each of our six input files. Once it's done
 running, take a look at your directory contents. You'll notice that even though we ran Trimmomatic on file `SRR2589044` before running the for loop, there is only one set of files for it. Because we matched the ending `_1.fastq.gz`, we re-ran Trimmomatic on this file, overwriting our first results. That's ok, but it's good to be aware that it happened.
 
