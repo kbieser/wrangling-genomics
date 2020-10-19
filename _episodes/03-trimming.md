@@ -264,6 +264,7 @@ Consider the original trimmomatic command, it had 2 inputs and 4 output files an
 ~~~
 ls -lh
 ~~~
+{: .bash}
 
 It looks like there is a common suffix or base to the name. So we can manipulate the content of the variable that we already know called infile. We can manipulate the variable called infile and save those manipulated contents to a new variable.
 
@@ -352,7 +353,7 @@ $ for infile in *_1.fastq.gz
 ~~~
 {: .bash}
 
-Save the text file as trim.sh.
+Save the text file as trim.sh. The script will be saved in ~/data/dc_workshop/data/untrimmed_fastq.
 
 Return to your terminal and navigate to:
 
@@ -361,17 +362,26 @@ $ cd ~/data/dc_workshop/data/untrimmed_fastq
 ~~~
 {: .bash}
 
-Go ahead and run the for loop by copying and pasting in the for loop or by running the saved script.
-
-If you want to run the command from the save script, you first have to make the script executable.
+To make the script executable:
 
 ~~~
 chmod +x trim.sh
 ~~~
 {: .bash}
 
-It should take a few minutes for
-Trimmomatic to run for each of our six input files. Once it's done
+Go ahead and run the for loop by copying and pasting in the for loop or by running the saved script.
+
+To run the for loop from the script:
+
+~~~
+cd ~/data/dc_workshop/data/untrimmed_fastq
+./trim.sh
+~~~
+{: .bash}
+
+The ./ tells the server where to find the script and to run it from this location.
+
+It should take a few minutes for Trimmomatic to run for each of our six input files. Once it's done
 running, take a look at your directory contents. You'll notice that even though we ran Trimmomatic on file `SRR2589044` before running the for loop, there is only one set of files for it. Because we matched the ending `_1.fastq.gz`, we re-ran Trimmomatic on this file, overwriting our first results. That's ok, but it's good to be aware that it happened.
 
 ~~~
