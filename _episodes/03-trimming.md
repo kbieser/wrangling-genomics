@@ -221,7 +221,7 @@ quickly!
 We unzipped one of our files before to work with it, let's compress it again before we run our for loop.
 
 ~~~
-gzip SRR2584863_1.fastq
+$ gzip SRR2584863_1.fastq
 ~~~
 {: .bash}
 
@@ -262,7 +262,7 @@ this is a line that isn't a filename
 Consider the original trimmomatic command, it had 2 inputs and 4 output files and our loop currently is only aware of 1 of our 2 input files. We need to think of a way to make it aware of all of the others. What do the file names have in common?
 
 ~~~
-ls -lh
+$ ls -lh
 ~~~
 {: .bash}
 
@@ -271,7 +271,7 @@ It looks like there is a common suffix or base to the name. So we can manipulate
 Let's use basename to demonstrate that we can remove the suffix.
 
 ~~~
-basename SRR2584863_1.fastq.gz _1.fastq.gz
+$ basename SRR2584863_1.fastq.gz _1.fastq.gz
 ~~~
 {: .bash}
 
@@ -283,8 +283,8 @@ SRR2584863
 How can we get the output of basename to get stored in a new variable? We can use a special syntax with $() to start a command, run something, and then get back to finishing what it started. Let's make a new variable and do a subshell of it to see how it works. The output of what is run in () gets stored in prefix.
 
 ~~~
-prefix=$(basename SRR2584863_1.fastq.gz _1.fastq.gz)
-echo ${prefix}
+$ prefix=$(basename SRR2584863_1.fastq.gz _1.fastq.gz)
+$ echo ${prefix}
 ~~~
 {: .bash}
 
@@ -318,14 +318,14 @@ SRR2589044
 Remember your history command? We had a pretty complicated trimmomatic command that we used and we want to substitute the variable in there. Let's remember what that command was. Who remembers what command shows us things we've already done? Look for the trimmomatic command in their history.
 
 ~~~
-history | grep trimmomatic
+$ history | grep trimmomatic
 ~~~
 {: .bash}
 
 Copy your trimmomatic command and open nano.
 
 ~~~
-nano
+$ nano
 ~~~
 {: .bash}
 
@@ -365,7 +365,7 @@ $ cd ~/data/dc_workshop/data/untrimmed_fastq
 To make the script executable:
 
 ~~~
-chmod +x trim.sh
+$ chmod +x trim.sh
 ~~~
 {: .bash}
 
@@ -374,8 +374,8 @@ Go ahead and run the for loop by copying and pasting in the for loop or by runni
 To run the for loop from the script:
 
 ~~~
-cd ~/data/dc_workshop/data/untrimmed_fastq
-./trim.sh
+$ cd ~/data/dc_workshop/data/untrimmed_fastq
+$ ./trim.sh
 ~~~
 {: .bash}
 
