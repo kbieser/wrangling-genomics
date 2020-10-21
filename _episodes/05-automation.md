@@ -1,7 +1,7 @@
 ---
 title: "Automating a Variant Calling Workflow"
-teaching: 30
-exercises: 15
+teaching: 0
+exercises: 0
 questions:
 - "How can I make my workflow more efficient and less error-prone?"
 objectives:
@@ -14,9 +14,9 @@ keypoints:
 # What is a shell script?
 
 You wrote a simple shell script in a [previous lesson](http://www.datacarpentry.org/shell-genomics/05-writing-scripts/) that we used to extract bad reads from our
-FASTQ files and put them into a new file.
+FASTQ files and put them into a new file. We also wrote a shell script to run trimmomatic.
 
-Here's the script you wrote:
+Here's one of the scripts you wrote:
 
 ~~~
 grep -B1 -A2 NNNNNNNNNN *.fastq > scripted_bad_reads.txt
@@ -80,8 +80,8 @@ directory called `scripts/`. Previously, we used
 `nano` to create and open a new file. The command `touch` allows us to create a new file without opening that file.
 
 ~~~
-$ mkdir -p ~/dc_workshop/scripts
-$ cd ~/dc_workshop/scripts
+$ mkdir -p ~/data/dc_workshop/scripts
+$ cd ~/data/dc_workshop/scripts
 $ touch read_qc.sh
 $ ls
 ~~~
@@ -106,7 +106,7 @@ Our first line will ensure that our script will exit if an error occurs, and is 
 
 ~~~
 set -e
-cd ~/dc_workshop/data/untrimmed_fastq/
+cd ~/data/dc_workshop/data/untrimmed_fastq/
 ~~~
 {: .output}
 
@@ -122,7 +122,7 @@ fastqc *.fastq*
 Our next line will create a new directory to hold our FastQC output files. Here we are using the `-p` option for `mkdir` again. It is a good idea to use this option in your shell scripts to avoid running into errors if you don't have the directory structure you think you do.
 
 ~~~
-mkdir -p ~/dc_workshop/results/fastqc_untrimmed_reads
+mkdir -p ~/data/dc_workshop/results/fastqc_untrimmed_reads
 ~~~
 {: .output}
 
@@ -131,15 +131,15 @@ with a `.zip` or a `.html` extension to the directory we just created for storin
 
 ~~~
 echo "Saving FastQC results..."
-mv *.zip ~/dc_workshop/results/fastqc_untrimmed_reads/
-mv *.html ~/dc_workshop/results/fastqc_untrimmed_reads/
+mv *.zip ~/data/dc_workshop/results/fastqc_untrimmed_reads/
+mv *.html ~/data/dc_workshop/results/fastqc_untrimmed_reads/
 ~~~
 {: .output}
 
 The next line moves us to the results directory where we've stored our output.
 
 ~~~
-cd ~/dc_workshop/results/fastqc_untrimmed_reads/
+cd ~/data/dc_workshop/results/fastqc_untrimmed_reads/
 ~~~
 {: .output}
 
@@ -160,7 +160,7 @@ what we're doing.
 
 ~~~
 echo "Saving summary..."
-cat */summary.txt > ~/dc_workshop/docs/fastqc_summaries.txt
+cat */summary.txt > ~/data/dc_workshop/docs/fastqc_summaries.txt
 ~~~
 {: .output}
 
@@ -253,7 +253,7 @@ Our variant calling workflow has the following steps:
 Let's go through this script together:
 
 ~~~
-$ cd ~/dc_workshop/scripts
+$ cd ~/data/dc_workshop/scripts
 $ less run_variant_calling.sh
 ~~~
 {: .bash}
@@ -262,29 +262,29 @@ The script should look like this:
 
 ~~~
 set -e
-cd ~/dc_workshop/results
+cd ~/data/dc_workshop/results
 
-genome=~/dc_workshop/data/ref_genome/ecoli_rel606.fasta
+genome=~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta
 
 bwa index $genome
 
 mkdir -p sam bam bcf vcf
 
-for fq1 in ~/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
+for fq1 in ~/data/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
     do
     echo "working with file $fq1"
 
     base=$(basename $fq1 _1.trim.sub.fastq)
     echo "base name is $base"
 
-    fq1=~/dc_workshop/data/trimmed_fastq_small/${base}_1.trim.sub.fastq
-    fq2=~/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
-    sam=~/dc_workshop/results/sam/${base}.aligned.sam
-    bam=~/dc_workshop/results/bam/${base}.aligned.bam
-    sorted_bam=~/dc_workshop/results/bam/${base}.aligned.sorted.bam
-    raw_bcf=~/dc_workshop/results/bcf/${base}_raw.bcf
-    variants=~/dc_workshop/results/bcf/${base}_variants.vcf
-    final_variants=~/dc_workshop/results/vcf/${base}_final_variants.vcf
+    fq1=~/data/dc_workshop/data/trimmed_fastq_small/${base}_1.trim.sub.fastq
+    fq2=~/data/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
+    sam=~/data/dc_workshop/results/sam/${base}.aligned.sam
+    bam=~/data/dc_workshop/results/bam/${base}.aligned.bam
+    sorted_bam=~/data/dc_workshop/results/bam/${base}.aligned.sorted.bam
+    raw_bcf=~/data/dc_workshop/results/bcf/${base}_raw.bcf
+    variants=~/data/dc_workshop/results/bcf/${base}_variants.vcf
+    final_variants=~/data/dc_workshop/results/vcf/${base}_final_variants.vcf
 
     bwa mem $genome $fq1 $fq2 > $sam
     samtools view -S -b $sam > $bam
@@ -304,7 +304,7 @@ First, notice that we change our working directory so that we can create new res
 in the right location.
 
 ~~~
-cd ~/dc_workshop/results
+cd ~/data/dc_workshop/results
 ~~~
 {: .output}
 
@@ -312,7 +312,7 @@ Next we tell our script where to find the reference genome by assigning the `gen
 the path to our reference genome:
 
 ~~~
-genome=~/dc_workshop/data/ref_genome/ecoli_rel606.fasta
+genome=~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta
 ~~~
 {: .output}
 
@@ -339,7 +339,7 @@ The first thing we do is assign the name of the FASTQ file we're currently worki
 tell the script to `echo` the filename back to us so we can check which file we're on.
 
 ~~~
-for fq1 in ~/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
+for fq1 in ~/data/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
     do
     echo "working with file $fq1"
 ~~~
@@ -358,16 +358,16 @@ We can use the `base` variable to access both the `base_1.fastq` and `base_2.fas
 
 ~~~
     #input fastq files
-    fq1=~/dc_workshop/data/trimmed_fastq_small/${base}_1.trim.sub.fastq
-    fq2=~/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
+    fq1=~/data/dc_workshop/data/trimmed_fastq_small/${base}_1.trim.sub.fastq
+    fq2=~/data/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
 
     # output files
-    sam=~/dc_workshop/results/sam/${base}.aligned.sam
-    bam=~/dc_workshop/results/bam/${base}.aligned.bam
-    sorted_bam=~/dc_workshop/results/bam/${base}.aligned.sorted.bam
-    raw_bcf=~/dc_workshop/results/bcf/${base}_raw.bcf
-    variants=~/dc_workshop/results/bcf/${base}_variants.vcf
-    final_variants=~/dc_workshop/results/vcf/${base}_final_variants.vcf     
+    sam=~/data/dc_workshop/results/sam/${base}.aligned.sam
+    bam=~/data/dc_workshop/results/bam/${base}.aligned.bam
+    sorted_bam=~/data/dc_workshop/results/bam/${base}.aligned.sorted.bam
+    raw_bcf=~/data/dc_workshop/results/bcf/${base}_raw.bcf
+    variants=~/data/dc_workshop/results/bcf/${base}_variants.vcf
+    final_variants=~/data/dc_workshop/results/vcf/${base}_final_variants.vcf     
 ~~~
 {: .bash}
 

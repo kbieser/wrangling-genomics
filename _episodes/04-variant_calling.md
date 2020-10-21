@@ -37,9 +37,9 @@ First we download the reference genome for *E. coli* REL606. Although we could c
 
 ~~~
 $ cd ~/data/dc_workshop
-$ mkdir -p ~/data/ref_genome
-$ curl -L -o ~/data/ref_genome/ecoli_rel606.fasta.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/017/985/GCA_000017985.1_ASM1798v1/GCA_000017985.1_ASM1798v1_genomic.fna.gz
-$ gunzip ~/data/ref_genome/ecoli_rel606.fasta.gz
+$ mkdir -p ~/data/dc_workshop/data/ref_genome
+$ curl -L -o ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/017/985/GCA_000017985.1_ASM1798v1/GCA_000017985.1_ASM1798v1_genomic.fna.gz
+$ gunzip ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta.gz
 ~~~
 {: .bash}
 
@@ -61,7 +61,7 @@ $ gunzip ~/data/ref_genome/ecoli_rel606.fasta.gz
 {: .challenge}
 
 We will also download a set of trimmed FASTQ files to work with. These are small subsets of our real trimmed data,
-and will enable us to run our variant calling workflow quite quickly.
+and will enable us to run our variant calling workflow quite quickly. We will also use the `tar` command to create compressed archive files that can be moved easily from one location to another. The `xvf` flags tells `tar` to extract the files and do it verbosely. We will then move them to a subdirectory.  
 
 ~~~
 $ curl -L -o sub.tar.gz https://ndownloader.figshare.com/files/14418248
@@ -125,7 +125,7 @@ samples in our dataset (`SRR2584866`). Later, we'll be
 iterating this whole process on all of our sample files.
 
 ~~~
-$ bwa mem ~/data/ref_genome/ecoli_rel606.fasta ~/data/dc_workshop/data/trimmed_fastq_small/SRR2584866_1.trim.sub.fastq ~/data/dc_workshop/data/trimmed_fastq_small/SRR2584866_2.trim.sub.fastq > results/sam/SRR2584866.aligned.sam
+$ bwa mem ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta ~/data/dc_workshop/data/trimmed_fastq_small/SRR2584866_1.trim.sub.fastq ~/data/dc_workshop/data/trimmed_fastq_small/SRR2584866_2.trim.sub.fastq > results/sam/SRR2584866.aligned.sam
 ~~~
 {: .bash}
 
@@ -172,6 +172,7 @@ $ samtools view -S -b results/sam/SRR2584866.aligned.sam > results/bam/SRR258486
 ~~~
 {: .bash}
 
+You may not see this output, but you should see SRR2584866.aligned.bam in the bam directory.
 ~~~
 [samopen] SAM header is present: 1 sequences.
 ~~~
@@ -240,7 +241,7 @@ bcf format output file, `-o` specifies where to write the output file, and `-f` 
 
 ~~~
 $ bcftools mpileup -O b -o results/bcf/SRR2584866_raw.bcf \
--f data/ref_genome/ecoli_rel606.fasta results/bam/SRR2584866.aligned.sorted.bam
+-f ~/data/ref_genome/ecoli_rel606.fasta results/bam/SRR2584866.aligned.sorted.bam
 ~~~
 {: .bash}
 
@@ -413,7 +414,7 @@ It uses different colors to display mapping quality or base quality, subjected t
 In order to visualize our mapped reads, we use `tview`, giving it the sorted bam file and the reference file:
 
 ~~~
-$ samtools tview results/bam/SRR2584866.aligned.sorted.bam data/ref_genome/ecoli_rel606.fasta
+$ samtools tview results/bam/SRR2584866.aligned.sorted.bam ~/data/ref_genome/ecoli_rel606.fasta
 ~~~
 {: .bash}
 
@@ -457,14 +458,13 @@ this box, type the name of the "chromosome" followed by a colon and the position
 (e.g. for this sample, type `CP000819.1:50` to view the 50th base. Type `Ctrl^C` or `q` to exit `tview`.
 
 > ## Exercise
->
 > Visualize the alignment of the reads for our `SRR2584866` sample. What variant is present at
 > position 4377265? What is the canonical nucleotide in that position?
 >
 >> ## Solution
 >>
 >> ~~~
->> $ samtools tview ~/dc_workshop/results/bam/SRR2584866.aligned.sorted.bam ~/dc_workshop/data/ref_genome/ecoli_rel606.fasta
+>> $ samtools tview results/bam/SRR2584866.aligned.sorted.bam ~/data/ref_genome/ecoli_rel606.fasta
 >> ~~~
 >> {: .bash}
 >>
@@ -515,7 +515,7 @@ Your IGV browser should look like the screenshot below:
 
 ![IGV](../img/igv-screenshot.png)
 
-There should be two tracks: one coresponding to our BAM file and the other for our VCF file.
+There should be two tracks: one corresponding to our BAM file and the other for our VCF file.
 
 In the **VCF track**, each bar across the top of the plot shows the allele fraction for a single locus. The second bar shows
 the genotypes for each locus in each *sample*. We only have one sample called here, so we only see a single line. Dark blue =
