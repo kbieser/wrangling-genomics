@@ -1,5 +1,5 @@
 ---
-title: "Trimming and Filtering"
+title: "Fly-CURE Trimming and Filtering"
 teaching: 0
 exercises: 0
 questions:

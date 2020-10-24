@@ -1,5 +1,5 @@
 ---
-title: "Assessing Read Quality"
+title: "Fly-CURE Assessing Read Quality"
 teaching: 0
 exercises: 0
 questions:
