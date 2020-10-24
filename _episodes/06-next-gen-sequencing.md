@@ -1,3 +1,15 @@
+---
+title: "Fly-CURE Next-Generation Sequencing"
+teaching: 0
+exercises: 0
+questions:
+-
+objectives:
+-
+keypoints:
+- 
+---
+
 DNA Sequencing Lessons
 
 We will utilize tutorials created by Illumina to understand various aspects of the DNA sequencing process.
