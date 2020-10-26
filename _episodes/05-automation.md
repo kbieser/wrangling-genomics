@@ -131,15 +131,15 @@ with a `.zip` or a `.html` extension to the directory we just created for storin
 
 ~~~
 echo "Saving FastQC results..."
-mv *.zip ~/data/dc_workshop/results/fastqc_untrimmed_reads/
-mv *.html ~/data/dc_workshop/results/fastqc_untrimmed_reads/
+mv *.zip ~/data/dc_workshop/data/results/fastqc_untrimmed_reads/
+mv *.html ~/data/dc_workshop/data/results/fastqc_untrimmed_reads/
 ~~~
 {: .output}
 
 The next line moves us to the results directory where we've stored our output.
 
 ~~~
-cd ~/data/dc_workshop/results/fastqc_untrimmed_reads/
+cd ~/data/dc_workshop/data/results/fastqc_untrimmed_reads/
 ~~~
 {: .output}
 
@@ -175,18 +175,18 @@ Your full shell script should now look like this:
 
 ~~~
 set -e
-cd ~/dc_workshop/data/untrimmed_fastq/
+cd ~/data/dc_workshop/data/untrimmed_fastq/
 
 echo "Running FastQC ..."
 fastqc *.fastq*
 
-mkdir -p ~/dc_workshop/results/fastqc_untrimmed_reads
+mkdir -p ~/data/dc_workshop/data/results/fastqc_untrimmed_reads
 
 echo "Saving FastQC results..."
-mv *.zip ~/dc_workshop/results/fastqc_untrimmed_reads/
-mv *.html ~/dc_workshop/results/fastqc_untrimmed_reads/
+mv *.zip ~/data/dc_workshop/data/results/fastqc_untrimmed_reads/
+mv *.html ~/data/dc_workshop/data/results/fastqc_untrimmed_reads/
 
-cd ~/dc_workshop/results/fastqc_untrimmed_reads/
+cd ~/data/dc_workshop/data/results/fastqc_untrimmed_reads/
 
 echo "Unzipping..."
 for filename in *.zip
@@ -195,7 +195,7 @@ for filename in *.zip
     done
 
 echo "Saving summary..."
-cat */summary.txt > ~/dc_workshop/docs/fastqc_summaries.txt
+cat */summary.txt > ~/data/dc_workshop/docs/fastqc_summaries.txt
 ~~~
 {: .output}
 
@@ -279,12 +279,12 @@ for fq1 in ~/data/dc_workshop/data/trimmed_fastq_small/*_1.trim.sub.fastq
 
     fq1=~/data/dc_workshop/data/trimmed_fastq_small/${base}_1.trim.sub.fastq
     fq2=~/data/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
-    sam=~/data/dc_workshop/results/sam/${base}.aligned.sam
-    bam=~/data/dc_workshop/results/bam/${base}.aligned.bam
-    sorted_bam=~/data/dc_workshop/results/bam/${base}.aligned.sorted.bam
-    raw_bcf=~/data/dc_workshop/results/bcf/${base}_raw.bcf
-    variants=~/data/dc_workshop/results/bcf/${base}_variants.vcf
-    final_variants=~/data/dc_workshop/results/vcf/${base}_final_variants.vcf
+    sam=~/data/dc_workshop/data/results/sam/${base}.aligned.sam
+    bam=~/data/dc_workshop/data/results/bam/${base}.aligned.bam
+    sorted_bam=~/data/dc_workshop/data/results/bam/${base}.aligned.sorted.bam
+    raw_bcf=~/data/dc_workshop/data/results/bcf/${base}_raw.bcf
+    variants=~/data/dc_workshop/data/results/bcf/${base}_variants.vcf
+    final_variants=~/data/dc_workshop/data/results/vcf/${base}_final_variants.vcf
 
     bwa mem $genome $fq1 $fq2 > $sam
     samtools view -S -b $sam > $bam
@@ -362,12 +362,12 @@ We can use the `base` variable to access both the `base_1.fastq` and `base_2.fas
     fq2=~/data/dc_workshop/data/trimmed_fastq_small/${base}_2.trim.sub.fastq
 
     # output files
-    sam=~/data/dc_workshop/results/sam/${base}.aligned.sam
-    bam=~/data/dc_workshop/results/bam/${base}.aligned.bam
-    sorted_bam=~/data/dc_workshop/results/bam/${base}.aligned.sorted.bam
-    raw_bcf=~/data/dc_workshop/results/bcf/${base}_raw.bcf
-    variants=~/data/dc_workshop/results/bcf/${base}_variants.vcf
-    final_variants=~/data/dc_workshop/results/vcf/${base}_final_variants.vcf     
+    sam=~/data/dc_workshop/data/results/sam/${base}.aligned.sam
+    bam=~/data/dc_workshop/data/results/bam/${base}.aligned.bam
+    sorted_bam=~/data/dc_workshop/data/results/bam/${base}.aligned.sorted.bam
+    raw_bcf=~/data/dc_workshop/data/results/bcf/${base}_raw.bcf
+    variants=~/data/dc_workshop/data/results/bcf/${base}_variants.vcf
+    final_variants=~/data/dc_workshop/data/results/vcf/${base}_final_variants.vcf     
 ~~~
 {: .bash}
 
