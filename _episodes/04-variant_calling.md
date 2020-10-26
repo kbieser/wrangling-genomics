@@ -75,6 +75,7 @@ line of code, because `mkdir` can accept multiple new directory
 names as input.
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ mkdir -p results/sam results/bam results/bcf results/vcf
 ~~~
 {: .bash}
@@ -84,7 +85,7 @@ $ mkdir -p results/sam results/bam results/bcf results/vcf
 Our first step is to index the reference genome for use by BWA. Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment.
 
 ~~~
-$ bwa index ~/data/ref_genome/ecoli_rel606.fasta
+$ bwa index ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta
 ~~~
 {: .bash}
 
@@ -125,7 +126,8 @@ samples in our dataset (`SRR2584866`). Later, we'll be
 iterating this whole process on all of our sample files.
 
 ~~~
-$ bwa mem ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta ~/data/dc_workshop/data/trimmed_fastq_small/SRR2584866_1.trim.sub.fastq ~/data/dc_workshop/data/trimmed_fastq_small/SRR2584866_2.trim.sub.fastq > results/sam/SRR2584866.aligned.sam
+$ cd ~/data/dc_workshop/data
+$ bwa mem ref_genome/ecoli_rel606.fasta trimmed_fastq_small/SRR2584866_1.trim.sub.fastq trimmed_fastq_small/SRR2584866_2.trim.sub.fastq > results/sam/SRR2584866.aligned.sam
 ~~~
 {: .bash}
 
@@ -168,6 +170,7 @@ displayed below with the different fields highlighted.
 We will convert the SAM file to BAM format using the `samtools` program with the `view` command and tell this command that the input is in SAM format (`-S`) and to output BAM format (`-b`):
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ samtools view -S -b results/sam/SRR2584866.aligned.sam > results/bam/SRR2584866.aligned.bam
 ~~~
 {: .bash}
@@ -184,6 +187,7 @@ You may not see this output, but you should see SRR2584866.aligned.bam in the ba
 Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output.
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ samtools sort -o results/bam/SRR2584866.aligned.sorted.bam results/bam/SRR2584866.aligned.bam
 ~~~
 {: .bash}
@@ -200,7 +204,8 @@ SAM/BAM files can be sorted in multiple ways, e.g. by location of alignment on t
 You can use samtools to learn more about this bam file as well.
 
 ~~~
-samtools flagstat results/bam/SRR2584866.aligned.sorted.bam
+$ cd ~/data/dc_workshop/data
+$ samtools flagstat results/bam/SRR2584866.aligned.sorted.bam
 ~~~
 {: .bash}
 
@@ -240,6 +245,7 @@ use the command `mpileup`. The flag `-O b` tells bcftools to generate a
 bcf format output file, `-o` specifies where to write the output file, and `-f` flags the path to the reference genome:
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ bcftools mpileup -O b -o results/bcf/SRR2584866_raw.bcf \
 -f ~/data/ref_genome/ecoli_rel606.fasta results/bam/SRR2584866.aligned.sorted.bam
 ~~~
@@ -257,6 +263,7 @@ We have now generated a file with coverage information for every base.
 Identify SNPs using bcftools `call`. We have to specify ploidy with the flag `--ploidy`, which is one for the haploid *E. coli*. `-m` allows for multiallelic and rare-variant calling, `-v` tells the program to output variant sites only (not every site in the genome), and `-o` specifies where to write the output file:
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ bcftools call --ploidy 1 -m -v -o results/bcf/SRR2584866_variants.vcf results/bcf/SRR2584866_raw.bcf
 ~~~
 {: .bash}
@@ -266,6 +273,7 @@ $ bcftools call --ploidy 1 -m -v -o results/bcf/SRR2584866_variants.vcf results/
 Filter the SNPs for the final output in VCF format, using `vcfutils.pl`:
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ vcfutils.pl varFilter results/bcf/SRR2584866_variants.vcf  > results/vcf/SRR2584866_final_variants.vcf
 ~~~
 {: .bash}
@@ -401,6 +409,7 @@ software installation and transfer of files.
 In order for us to visualize the alignment files, we will need to index the BAM file using `samtools`:
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ samtools index results/bam/SRR2584866.aligned.sorted.bam
 ~~~
 {: .bash}
@@ -414,6 +423,7 @@ It uses different colors to display mapping quality or base quality, subjected t
 In order to visualize our mapped reads, we use `tview`, giving it the sorted bam file and the reference file:
 
 ~~~
+$ cd ~/data/dc_workshop/data
 $ samtools tview results/bam/SRR2584866.aligned.sorted.bam ~/data/ref_genome/ecoli_rel606.fasta
 ~~~
 {: .bash}
@@ -474,7 +484,7 @@ this box, type the name of the "chromosome" followed by a colon and the position
 > {: .solution}
 {: .challenge}
 
-### Viewing with IGV
+### Viewing with IGV - SKIP
 
 [IGV](http://www.broadinstitute.org/igv/) is a stand-alone browser, which has the advantage of being installed locally and providing fast access. Web-based genome browsers, like [Ensembl](http://www.ensembl.org/index.html) or the [UCSC browser](https://genome.ucsc.edu/), are slower, but provide more functionality. They not only allow for more polished and flexible visualization, but also provide easy access to a wealth of annotations and external data sources. This makes it straightforward to relate your data with information about repeat regions, known genes, epigenetic features or areas of cross-species conservation, to name just a few.
 
@@ -500,8 +510,6 @@ $ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/data/ref_g
 $ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/results/vcf/SRR2584866_final_variants.vcf ~/Desktop/files_for_igv
 ~~~
 {: .bash}
-
-You will need to type the password for your AWS instance each time you call `scp`.
 
 Next, we need to open the IGV software. If you haven't done so already, you can download IGV from the [Broad Institute's software page](https://www.broadinstitute.org/software/igv/download), double-click the `.zip` file
 to unzip it, and then drag the program into your Applications folder.
