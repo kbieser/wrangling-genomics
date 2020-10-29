@@ -8,10 +8,10 @@ objectives:
 - "Explain how a FASTQ file encodes per-base quality scores."
 - "Interpret a FastQC plot summarizing per-base quality across all reads."
 - "Use `for` loops to automate operations on multiple files."
-- "Run FastQC on fly NGS .fastq files"
+- "Run FastQC on fly NGS FASTQ files"
 keypoints:
-- "Quality encodings vary across sequencing platforms."
 - "`for` loops let you perform the same set of operations on multiple files with a single command."
+- "FastQC enables us to validate the continued use of the sequencing data"
 ---
 
 # Bioinformatic workflows

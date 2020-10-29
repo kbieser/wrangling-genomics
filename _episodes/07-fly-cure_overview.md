@@ -43,10 +43,14 @@ Figure 3: Mutants mapped by undergraduate researchers and Fly-CURE µ-publicatio
 
 Some EMS mutants have proven difficult to map utilizing the techniques in the Fly-CURE. As a result, funding was obtained to conduct whole-genome sequencing (WGS) on the _ark_ control and 9 EMS mutant stocks. There was uncertainty about whether WGS was going to be successful due to the presence of a balancer chromosome which prevents recombination. Recombination is often utilized in a bioinformatics pipeline to identify SNPs.  
 
+![EMS_mutants](../img/EMS_mutants.png)
+
+Figure 4: Images of the _ark_ control and the 9 EMS mutants that were sequenced for this study.
+
 # Objective
 
-The primary objective is to utilize a genomics pipeline to identify the causative SNP in 9 EMS mutants (Fig. 4). We will be using many of the skills and tools you have previously utilized in the shell genomics and wrangling genomics lessons. 
+The primary objective is to utilize a genomics pipeline to identify the causative SNP in 9 EMS mutants (Fig. 5). We will be using many of the skills and tools you have previously utilized in the shell genomics and wrangling genomics lessons.
 
 ![WGS_pipeline](../img/WGS_pipeline.png)
 
-Figure 4: Genomics pipeline to identify the causative SNP in EMS _Drosophila melanogaster_ mutants.
+Figure 5: Genomics pipeline to identify the causative SNP in EMS _Drosophila melanogaster_ mutants.
