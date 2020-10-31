@@ -369,7 +369,7 @@ trimmomatic PE -threads 8 \
 Once it is copied in you are now going to convert it to a for loop by replacing the explicit parts with variables.
 
 > ## Exercise
-> Using the steps we tested above, create a for loop to run trimmomatic on all of our fastq files. Since you have the trimmomatic command pasted into nano, comment out each line > and use it to help you build the for loop. Save the text file as trim.sh and move to your scripts directory. If you really want to challenge yourself, you can add in commands  > to make a new fastq_trimmed/ and move the .trim and .orphan files to that new directory all within the script. Comment out notes within the text to help yourself. Don't forget > you have to make the script executable in order to run > it. Run the for loop.  
+> Using the steps we tested above, create a for loop to run trimmomatic on all of our fastq files. Since you have the trimmomatic command pasted into nano, comment out each line > and use it to help you build the for loop. Save the text file as trim.sh and move to your scripts directory. If you really want to challenge yourself, you can add in commands  > to make a new fastq_trimmed/ and move the .trim and .orphan files to there own new directory's all within the script. Comment out notes within the text to help yourself. Don't forget > you have to make the script executable in order to run > it. Run the for loop.  
 >
 >
 >> ## Solution
@@ -386,8 +386,9 @@ Once it is copied in you are now going to convert it to a for loop by replacing 
 >> done
 >>
 >> mkdir -p ~/data/FlyCURE/results/fastq_trimmed
+>> mkdir -p ~/data/FlyCURE/results/fastq_trimmed_orphans
 >> mv *.trim* ../results/fastq_trimmed
->> mv *.orphan* ../results/fastq_trimmed
+>> mv *.orphan* ../results/fastq_trimmed_orphans
 >> ~~~
 >> {: .bash}
 >>
@@ -444,11 +445,8 @@ $ cd ~/data/FlyCURE/results/fastq_trimmed
 {: .bash}
 
 ~~~
-A44_R1.orphan.fastq.gz        B-2-13_S1_R2.orphan.fastq.gz  Control_R1.orphan.fastq.gz  cos2_R2.orphan.fastq.gz  L31_R1.orphan.fastq.gz       L-3-2_S3_R2.orphan.fastq.gz  N-1-4_S5_R1.orphan.fastq.gz
 A44_R1.trim.fastq.gz          B-2-13_S1_R2.trim.fastq.gz    Control_R1.trim.fastq.gz    cos2_R2.trim.fastq.gz    L31_R1.trim.fastq.gz         L-3-2_S3_R2.trim.fastq.gz    N-1-4_S5_R1.trim.fastq.gz
-A44_R2.orphan.fastq.gz        B-2-16_S2_R1.orphan.fastq.gz  Control_R2.orphan.fastq.gz  H22_R1.orphan.fastq.gz   L31_R2.orphan.fastq.gz       N-1-1_S4_R1.orphan.fastq.gz  N-1-4_S5_R2.orphan.fastq.gz
 A44_R2.trim.fastq.gz          B-2-16_S2_R1.trim.fastq.gz    Control_R2.trim.fastq.gz    H22_R1.trim.fastq.gz     L31_R2.trim.fastq.gz         N-1-1_S4_R1.trim.fastq.gz    N-1-4_S5_R2.trim.fastq.gz
-B-2-13_S1_R1.orphan.fastq.gz  B-2-16_S2_R2.orphan.fastq.gz  cos2_R1.orphan.fastq.gz     H22_R2.orphan.fastq.gz   L-3-2_S3_R1.orphan.fastq.gz  N-1-1_S4_R2.orphan.fastq.gz
 B-2-13_S1_R1.trim.fastq.gz    B-2-16_S2_R2.trim.fastq.gz    cos2_R1.trim.fastq.gz       H22_R2.trim.fastq.gz     L-3-2_S3_R1.trim.fastq.gz    N-1-1_S4_R2.trim.fastq.gz
 ~~~
 {: .output}
@@ -467,8 +465,9 @@ B-2-13_S1_R1.trim.fastq.gz    B-2-16_S2_R2.trim.fastq.gz    cos2_R1.trim.fastq.g
 >> First edit your fastqc.sh and save as fastqc_trimmed.sh in your scripts/.
 >>
 >> ~~~
->> fastqc *.trim.fastq*
+>>
 >> mkdir -p ~/data/FlyCURE/results/fastqc_trimmed_reads
+>> fastqc -t 10 *.trim.fastq*
 >> mv *.zip ~/data/FlyCURE/results/fastqc_trimmed_reads
 >> mv *.html ~/data/FlyCURE/results/fastqc_trimmed_reads
 >> ~~~

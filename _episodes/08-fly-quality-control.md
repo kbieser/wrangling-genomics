@@ -435,25 +435,7 @@ $ cd ~/data/Fly_CURE/results/fastqc_untrimmed_reads/
 
 If you want to run FastQC on all of your files at once and move the outputs to the correct directory, you can write a script to do so.
 
-~~~
-$ nano fastqc.sh
-~~~
-{: .bash}
-
-In nano type in each command that you want to complete.
-
-~~~
-fastqc *.fastq*
-
-mkdir -p ~/data/FlyCURE/results/fastqc_untrimmed_reads
-
-mv *.zip ~/data/FlyCURE/results/fastqc_untrimmed_reads
-
-mv *.html ~/data/FlyCURE/results/fastqc_untrimmed_reads
-~~~
-{: .bash}
-
-Save the script.
+Let's start with making a scripts directory to save all the scripts we will be making
 
 ~~~
 cd ~/data/FlyCURE
@@ -461,12 +443,38 @@ mkdir scripts
 ~~~
 {: .bash}
 
-Move the `fastqc.sh` to the scripts directory
+Move into the scripts directory
 
 ~~~
-$ mv fastqc.sh ~/data/FlyCURE/scripts
+cd scripts
 ~~~
 {: .bash}
+
+~~~
+$ nano fastqc.sh
+~~~
+{: .bash}
+
+In nano type in each command that you want to complete. Let's also make some notes for ourselves so that we know what to use this script for and where to run it from.
+
+~~~
+#!/bin/bash
+# Use this script to run fastqc on my raw untrimmed reads
+# Run me inside of the fastq_trimmed reads directory
+
+mkdir -p ~/data/FlyCURE/results/fastqc_untrimmed_reads
+
+fastqc -t 10 -o ../results/fastqc_untrimmed_reads *.fastq*
+
+mv *.zip ~/data/FlyCURE/results/fastqc_untrimmed_reads
+
+mv *.html ~/data/FlyCURE/results/fastqc_untrimmed_reads
+~~~
+{: .bash}
+
+The `-t 10`tells the server how many CPU's to utilize while running the command. The `-o ../results/fastqc_untrimmed_reads`, directs where the outpus from fastqc should be saved. In the past we have used the `mv` command after we ran fastqc, but this method allows the data to be placed in the correct directory upon creation rather than having to move them after the fact.
+
+Save the script.
 
 To run the script you must make it executable.
 
