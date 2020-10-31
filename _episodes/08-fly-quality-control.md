@@ -466,9 +466,6 @@ mkdir -p ~/data/FlyCURE/results/fastqc_untrimmed_reads
 
 fastqc -t 10 -o ../results/fastqc_untrimmed_reads *.fastq*
 
-mv *.zip ~/data/FlyCURE/results/fastqc_untrimmed_reads
-
-mv *.html ~/data/FlyCURE/results/fastqc_untrimmed_reads
 ~~~
 {: .bash}
 

@@ -458,18 +458,15 @@ B-2-13_S1_R1.trim.fastq.gz    B-2-16_S2_R2.trim.fastq.gz    cos2_R1.trim.fastq.g
 > better on the quality tests run by FastQC. Go ahead and re-run
 > FastQC on your trimmed FASTQ files and visualize the HTML files
 > to see whether your per base sequence quality is higher after
-> trimming. Modify your fastqc.sh script to run on the trim_fastq. Again, plan for this to take a few hours.
+> trimming. Modify your fastqc.sh script to run on the trim_fastq. You can choose to use flags in the fastqc command to move the files to a new directory or you can move the files after they have been created with a mv command.
 >
 >> ## Solution
 >>
 >> First edit your fastqc.sh and save as fastqc_trimmed.sh in your scripts/.
 >>
 >> ~~~
->>
 >> mkdir -p ~/data/FlyCURE/results/fastqc_trimmed_reads
->> fastqc -t 10 *.trim.fastq*
->> mv *.zip ~/data/FlyCURE/results/fastqc_trimmed_reads
->> mv *.html ~/data/FlyCURE/results/fastqc_trimmed_reads
+>> fastqc -t 10 -o ../fastqc_trimmed_reads *.trim.fastq*
 >> ~~~
 >> {: .bash}
 >>
