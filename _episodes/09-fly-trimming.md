@@ -366,15 +366,27 @@ trimmomatic PE -threads 8 \
 ~~~
 {: .bash}
 
-Once it is copied in you are now going to convert it to a for loop by replacing the explicit parts with variables.
+Once it is copied in you are now going to convert it to a for loop by replacing the explicit parts with variables. Running trimmomatic on all 10 genomes takes awhile. Mine took 2-3 hours.
 
 > ## Exercise
-> Using the steps we tested above, create a for loop to run trimmomatic on all of our fastq files. Since you have the trimmomatic command pasted into nano, comment out each line > and use it to help you build the for loop. Save the text file as trim.sh and move to your scripts directory. If you really want to challenge yourself, you can add in commands  > to make a new fastq_trimmed/ and move the .trim and .orphan files to there own new directory's all within the script. Comment out notes within the text to help yourself. Don't forget > you have to make the script executable in order to run > it. Run the for loop.  
->
+> Using the steps we tested above, create a script and for loop to run trimmomatic on all of our fastq files. Since you have the trimmomatic command pasted into nano, comment out each line and use it to help you build the for loop. Save the text file as trim.sh and move to your scripts directory. If you really want to challenge yourself, you can add in commands to make a new fastq_trimmed/ and move the .trim and .orphan files to there own new directory's all within the script. Comment out notes within the text to help yourself. Don't forget you have to make the script executable in order to run it. Run the script.  
 >
 >> ## Solution
 >> I moved into scripts/ and used nano to open a trim.sh
+>> There are different variations that could be use which will still work. This is what I did.
 >> ~~~
+>> #!/bin/bash
+>> # Script to run trimmomatic
+>> # Run me from fastq_joined
+>>
+>> # Example of trimmomatic command to run on a single sample
+>> # trimmomatic PE -threads 8 \
+>> # A44_R1.fastq.gz A44_R2.fastq.gz \
+>> # A44_R1.trim.fastq.gz A44_R1.orphan.fastq.gz \
+>> # A44_R2.trim.fastq.gz A44_R2.orphan.fastq.gz \
+>> # ILLUMINACLIP:../adapters/custom_PE.fa:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:36
+>>
+>> # Script to run trimmomatic on all samples
 >> for infile in *_R1.fastq.gz
 >> do
 >> base=$(basename ${infile} _R1.fastq.gz)
@@ -398,11 +410,13 @@ Once it is copied in you are now going to convert it to a for loop by replacing 
 >> ~~~
 >> {: .bash}
 >>
+>> Make the script executable
 >> ~~~
 >> $ chmod +x trim.sh
 >> ~~~
 >> {: .bash}
 >>
+>> Run the script.
 >> ~~~
 >> $ cd ~/data/FlyCURE/fastq_joined
 >> $ ../scripts/trim.sh &
@@ -445,9 +459,10 @@ $ cd ~/data/FlyCURE/results/fastq_trimmed
 {: .bash}
 
 ~~~
-A44_R1.trim.fastq.gz          B-2-13_S1_R2.trim.fastq.gz    Control_R1.trim.fastq.gz    cos2_R2.trim.fastq.gz    L31_R1.trim.fastq.gz         L-3-2_S3_R2.trim.fastq.gz    N-1-4_S5_R1.trim.fastq.gz
-A44_R2.trim.fastq.gz          B-2-16_S2_R1.trim.fastq.gz    Control_R2.trim.fastq.gz    H22_R1.trim.fastq.gz     L31_R2.trim.fastq.gz         N-1-1_S4_R1.trim.fastq.gz    N-1-4_S5_R2.trim.fastq.gz
-B-2-13_S1_R1.trim.fastq.gz    B-2-16_S2_R2.trim.fastq.gz    cos2_R1.trim.fastq.gz       H22_R2.trim.fastq.gz     L-3-2_S3_R1.trim.fastq.gz    N-1-1_S4_R2.trim.fastq.gz
+A44_R1.trim.fastq.gz        B-2-16_S2_R1.trim.fastq.gz  cos2_R1.trim.fastq.gz  L31_R1.trim.fastq.gz       N-1-1_S4_R1.trim.fastq.gz
+A44_R2.trim.fastq.gz        B-2-16_S2_R2.trim.fastq.gz  cos2_R2.trim.fastq.gz  L31_R2.trim.fastq.gz       N-1-1_S4_R2.trim.fastq.gz
+B-2-13_S1_R1.trim.fastq.gz  Control_R1.trim.fastq.gz    H22_R1.trim.fastq.gz   L-3-2_S3_R1.trim.fastq.gz  N-1-4_S5_R1.trim.fastq.gz
+B-2-13_S1_R2.trim.fastq.gz  Control_R2.trim.fastq.gz    H22_R2.trim.fastq.gz   L-3-2_S3_R2.trim.fastq.gz  N-1-4_S5_R2.trim.fastq.gz
 ~~~
 {: .output}
 
@@ -458,14 +473,19 @@ B-2-13_S1_R1.trim.fastq.gz    B-2-16_S2_R2.trim.fastq.gz    cos2_R1.trim.fastq.g
 > better on the quality tests run by FastQC. Go ahead and re-run
 > FastQC on your trimmed FASTQ files and visualize the HTML files
 > to see whether your per base sequence quality is higher after
-> trimming. Modify your fastqc.sh script to run on the trim_fastq. You can choose to use flags in the fastqc command to move the files to a new directory or you can move the files after they have been created with a mv command.
+> trimming. Modify your fastqc.sh script to run on the trim.fastq.gz. You can choose to use flags in the fastqc command to move the files to a new directory or you can move the files after they have been created with a mv command. Name the new script `fastqc_trimmed.sh`. Include comments for yourself.
 >
 >> ## Solution
 >>
 >> First edit your fastqc.sh and save as fastqc_trimmed.sh in your scripts/.
 >>
 >> ~~~
+>> #!/bin/bash
+>> # script to run fastqc on trimmed reads and move output to a new directory
+>> # Run me in ~/data/FlyCURE/results/fastq_trimmed or where the fastq_trimmed reads are located
+>>
 >> mkdir -p ~/data/FlyCURE/results/fastqc_trimmed_reads
+>>
 >> fastqc -t 10 -o ../fastqc_trimmed_reads *.trim.fastq*
 >> ~~~
 >> {: .bash}

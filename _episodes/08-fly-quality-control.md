@@ -42,7 +42,7 @@ built under the assumption that the data will be provided in a specific format.
 
 Often times, the first step in a bioinformatic workflow is getting the data you want to work with onto a computer where you can work with it. If you have outsourced sequencing of your data, the sequencing center will usually provide you with a link that you can use to download your data. Today we will be working with private data shared with you through our Jupyter app as this is still unpublished data.
 
-A raw_illumina directory was received directly from the Illumina sequencer. There are 4 quadrants on the flow cell and we want to merge these into one `.fastq` file to work with. This file merging has been done in advance for you by utilizing the cat and redirection command. **For the first time you launch the app, you want to launch from the dataset found here: `Shared with Me/kbieser/FlyCURE`. You will want to start by running the first cell of your notebook. I would suggest navigating to `~/data/FlyCURE` and doing an `ls`. You should see `fastq_joined` and `adapters` in the `FlyCURE` directory. Run the second cell of your notebook. This may take awhile as it should be loading this new FlyCURE directory to your own `username/data` directory. Once it finishes you can save and complete that session. Upon launching the app the second time, you should navigate to `your_username/data` and launch from that data set. Each subsequent launch of the app, you will want to launch from your own data directory as you have for all previous lessons and use the notebook that is loaded into data.**
+A raw_illumina directory was received directly from the Illumina sequencer. There are 4 quadrants on the flow cell and we want to merge these into one `.fastq` file to work with. This file merging has been done in advance for you by utilizing the cat and redirection command. **TO BE EDITED_DO NOT DO THIS YET For the first time you launch the app, you want to launch from the dataset found here: `Shared with Me/kbieser/FlyCURE`. You will want to start by running the first cell of your notebook. I would suggest navigating to `~/data/FlyCURE` and doing an `ls`. You should see `fastq_joined` and `adapters` in the `FlyCURE` directory. Run the second cell of your notebook. This may take awhile as it should be loading this new FlyCURE directory to your own `username/data` directory. Once it finishes you can save and complete that session. Upon launching the app the second time, you should navigate to `your_username/data` and launch from that data set. Each subsequent launch of the app, you will want to launch from your own data directory as you have for all previous lessons and use the notebook that is loaded into data.**
 
 The data in the `fastq_joined` directory comes in a compressed format, which is why there is a `.gz` at the end of the file names. This makes it faster to transfer, and allows it to take up less space on our computer. Let's unzip one of the files so that we can look at the fastq format.
 
@@ -280,6 +280,7 @@ $ fastqc -h
 The program 'fastqc' is currently not installed. You can install it by typing:
 sudo apt-get install fastqc
 ~~~
+{: .bash}
 
 If this happens check with your instructor before trying to install it.
 
@@ -431,7 +432,7 @@ $ cd ~/data/Fly_CURE/results/fastqc_untrimmed_reads/
 ~~~
 {: .bash}
 
-##Running FastQC script method
+## Running FastQC script method
 
 If you want to run FastQC on all of your files at once and move the outputs to the correct directory, you can write a script to do so.
 
@@ -488,7 +489,7 @@ cd ~/data/FlyCURE/fastq_joined
 ~~~
 {: .bash}
 
-The `&` will let you follow the progress. This will take some time (two hours or more) as there are 10 FASTQ files representing 1 ark control fly and 9 different Ethylmethanesulfonate (EMS) mutants. Remember these are the sequencing reads for the whole genome of _Drosophila melanogaster_ which is approximately 139.5 million base pairs.
+The `&` will let you follow the progress. This will take some time to complete (mine took about 25 minutes) as there are 10 FASTQ files representing 1 ark control fly and 9 different Ethylmethanesulfonate (EMS) mutants. Remember these are the sequencing reads for the whole genome of _Drosophila melanogaster_ which is approximately 139.5 million base pairs.
 
 Once completed, navigate into the results directory and do some closer
 inspection of our output files.
@@ -516,7 +517,13 @@ data/FlyCURE/results/fastqc_untrimmed_reads
 ~~~
 
 ~~~
-A44_R1_fastqc.html        B-2-13_S1_R1_fastqc.zip   B-2-16_S2_R2_fastqc.html  Control_R2_fastqc.zip  H22_R1_fastqc.html  L31_R1_fastqc.zip        L-3-2_S3_R2_fastqc.html  N-1-1_S4_R2_fastqc.zip        A44_R1_fastqc.zip         B-2-13_S1_R2_fastqc.html  B-2-16_S2_R2_fastqc.zip   cos2_R1_fastqc.html    H22_R1_fastqc.zip   L31_R2_fastqc.html       L-3-2_S3_R2_fastqc.zip        N-1-4_S5_R1_fastqc.html   A44_R2_fastqc.html        B-2-13_S1_R2_fastqc.zip   Control_R1_fastqc.html    cos2_R1_fastqc.zip     H22_R2_fastqc.html  L31_R2_fastqc.zip         N-1-1_S4_R1_fastqc.html   N-1-4_S5_R1_fastqc.zip    A44_R2_fastqc.zip         B-2-16_S2_R1_fastqc.html  Control_R1_fastqc.zip     cos2_R2_fastqc.html    H22_R2_fastqc.zip         L-3-2_S3_R1_fastqc.html  N-1-1_S4_R1_fastqc.zip   N-1-4_S5_R2_fastqc.html     B-2-13_S1_R1_fastqc.html  B-2-16_S2_R1_fastqc.zip   Control_R2_fastqc.html    cos2_R2_fastqc.zip     L31_R1_fastqc.html  L-3-2_S3_R1_fastqc.zip   N-1-1_S4_R2_fastqc.html  N-1-4_S5_R2_fastqc.zip
+A44_R1_fastqc.html        B-2-13_S1_R2_fastqc.zip   Control_R2_fastqc.html  H22_R1_fastqc.zip   L-3-2_S3_R1_fastqc.html  N-1-1_S4_R2_fastqc.zip
+A44_R1_fastqc.zip         B-2-16_S2_R1_fastqc.html  Control_R2_fastqc.zip   H22_R2_fastqc.html  L-3-2_S3_R1_fastqc.zip   N-1-4_S5_R1_fastqc.html
+A44_R2_fastqc.html        B-2-16_S2_R1_fastqc.zip   cos2_R1_fastqc.html     H22_R2_fastqc.zip   L-3-2_S3_R2_fastqc.html  N-1-4_S5_R1_fastqc.zip
+A44_R2_fastqc.zip         B-2-16_S2_R2_fastqc.html  cos2_R1_fastqc.zip      L31_R1_fastqc.html  L-3-2_S3_R2_fastqc.zip   N-1-4_S5_R2_fastqc.html
+B-2-13_S1_R1_fastqc.html  B-2-16_S2_R2_fastqc.zip   cos2_R2_fastqc.html     L31_R1_fastqc.zip   N-1-1_S4_R1_fastqc.html  N-1-4_S5_R2_fastqc.zip
+B-2-13_S1_R1_fastqc.zip   Control_R1_fastqc.html    cos2_R2_fastqc.zip      L31_R2_fastqc.html  N-1-1_S4_R1_fastqc.zip
+B-2-13_S1_R2_fastqc.html  Control_R1_fastqc.zip     H22_R1_fastqc.html      L31_R2_fastqc.zip   N-1-1_S4_R2_fastqc.html
 ~~~
 {: .output}
 
