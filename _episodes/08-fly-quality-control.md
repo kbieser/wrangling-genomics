@@ -59,6 +59,7 @@ Return to your Persistance Notebook and run cell 2. Once that cell completes run
 The data in the `fastq_joined` directory comes in a compressed format, which is why there is a `.gz` at the end of the file names. This makes it faster to transfer, and allows it to take up less space on our computer. Let's unzip one of the files so that we can look at the fastq format.
 
 If you recall, we can use the gunzip command to unzip '.gz' files. Since these files are much larger than the data sets we have worked with previously, it may take some time to unzip.  
+
 ~~~
 $ cd ~/data/FlyCURE/fastq_joined
 $ gunzip B-2-13_S1_R1.fastq.gz
