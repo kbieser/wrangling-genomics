@@ -14,7 +14,7 @@ keypoints:
 - "There are many different file formats for storing genomics data. It's important to understand what type of information is contained in each file, and how it was derived."
 ---
 
-We mentioned before that we are working with files from a long-term evolution study of an *E. coli* population (designated Ara-3). Now that we have looked at our data to make sure that it is high quality, and removed low-quality base calls, we can perform variant calling to see how the population changed over time. We care how this population changed relative to the original population, *E. coli* strain REL606. Therefore, we will align each of our samples to the *E. coli* REL606 reference genome, and see what differences exist in our reads versus the genome.
+We mentioned before that we are working with files from a study of EMS mutated *D. melanogaster*. Now that we have looked at our data to make sure that it is high quality, and removed low-quality base calls, we can start the variant calling steps to identify unique SNPs for each mutant that may be responsible for the mutant phenotype. We will start by aligning each of our samples to the *D. melanogaster* BDGP6.28 reference genome (this it the most recent Ensemble release for *D. melanogaster*), and see what differences exist in our reads versus the reference genome.
 
 # Alignment to a reference genome
 
@@ -33,50 +33,27 @@ The alignment process consists of two steps:
 
 # Setting up
 
-First we download the reference genome for *E. coli* REL606. Although we could copy or move the file with `cp` or `mv`, most genomics workflows begin with a download step, so we will practice that here.
+First we download the reference genome for *D. melanogaster* BDGP6.28. Although we could copy or move the file with `cp` or `mv`, most genomics workflows begin with a download step, so we will practice that here.
 
+We first need to find the link for the genome at Ensemble.org. We are going to use the .gtf format. This stands for the gene transfer format (gtf) and hold information about gene structure in a tab-delimited text format.
+https://uswest.ensembl.org/Drosophila_melanogaster/Info/Index
+ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/
+Right click the link that says dna.toplevel.fa.gz
 ~~~
-$ cd ~/data/dc_workshop
-$ mkdir -p ~/data/dc_workshop/data/ref_genome
-$ curl -L -o ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/017/985/GCA_000017985.1_ASM1798v1/GCA_000017985.1_ASM1798v1_genomic.fna.gz
-$ gunzip ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta.gz
-~~~
-{: .bash}
-
-> ## Exercise
->
-> We saved this file as `data/ref_genome/ecoli_rel606.fasta.gz` and then decompressed it.
-> What is the real name of the genome?
->
->> ## Solution
->>
->> ~~~
->> $ head ~/data/ref_genome/ecoli_rel606.fasta
->> ~~~
->> {: .bash}
->>
->> The name of the sequence follows the `>` character. The name is `CP000819.1 Escherichia coli B str. REL606, complete genome`.
->> Keep this chromosome name (`CP000819.1`) in mind, as we will use it later in the lesson.
-> {: .solution}
-{: .challenge}
-
-We will also download a set of trimmed FASTQ files to work with. These are small subsets of our real trimmed data,
-and will enable us to run our variant calling workflow quite quickly. We will also use the `tar` command to create compressed archive files that can be moved easily from one location to another. The `xvf` flags tells `tar` to extract the files and do it verbosely. We will then move them to a subdirectory.  
-
-~~~
-$ curl -L -o sub.tar.gz https://ndownloader.figshare.com/files/14418248
-$ tar xvf sub.tar.gz
-$ mv sub/ ~/data/dc_workshop/data/trimmed_fastq_small
+$ cd ~/data/FlyCURE
+$ mkdir -p ~/data/FlyCURE/ref_genome
+$ curl -L -o ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.28.101.chr.gtf.gz
+$ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz
 ~~~
 {: .bash}
 
-You will also need to create directories for the results that will be generated as part of this workflow. We can do this in a single
+We need to create directories for the results that will be generated as part of this workflow. We can do this in a single
 line of code, because `mkdir` can accept multiple new directory
 names as input.
 
 ~~~
-$ cd ~/data/dc_workshop/data
-$ mkdir -p results/sam results/bam results/bcf results/vcf
+$ cd ~/data/FlyCURE/results
+$ mkdir -p sam bam bcf vcf
 ~~~
 {: .bash}
 
@@ -85,22 +62,14 @@ $ mkdir -p results/sam results/bam results/bcf results/vcf
 Our first step is to index the reference genome for use by BWA. Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment.
 
 ~~~
-$ bwa index ~/data/dc_workshop/data/ref_genome/ecoli_rel606.fasta
+$ bwa index ~/data/FlyCURE/ref_genome/bdgp6.28.fa
 ~~~
 {: .bash}
 
 While the index is created, you will see output that looks something like this:
 
 ~~~
-[bwa_index] Pack FASTA... 0.04 sec
-[bwa_index] Construct BWT for the packed sequence...
-[bwa_index] 1.05 seconds elapse.
-[bwa_index] Update BWT... 0.03 sec
-[bwa_index] Pack forward-only FASTA... 0.02 sec
-[bwa_index] Construct SA from BWT and Occ... 0.57 sec
-[main] Version: 0.7.17-r1188
-[main] CMD: bwa index data/ref_genome/ecoli_rel606.fasta
-[main] Real time: 1.765 sec; CPU: 1.715 sec
+
 ~~~
 {: .output}
 
@@ -126,24 +95,15 @@ samples in our dataset (`SRR2584866`). Later, we'll be
 iterating this whole process on all of our sample files.
 
 ~~~
-$ cd ~/data/dc_workshop/data
-$ bwa mem ref_genome/ecoli_rel606.fasta trimmed_fastq_small/SRR2584866_1.trim.sub.fastq trimmed_fastq_small/SRR2584866_2.trim.sub.fastq > results/sam/SRR2584866.aligned.sam
+$ cd ~/data/FlyCURE
+$ bwa mem ref_genome/bdgp6.28 results/fastq_trimmed/A44_R1.trim.fastq.gz results/fastq_trimmed/A44_R2.trim.fastq.gz > results/sam/A44.aligned.sa
 ~~~
 {: .bash}
 
 You will see output that starts like this:
 
 ~~~
-[M::bwa_idx_load_from_disk] read 0 ALT contigs
-[M::process] read 77446 sequences (10000033 bp)...
-[M::process] read 77296 sequences (10000182 bp)...
-[M::mem_pestat] # candidate unique pairs for (FF, FR, RF, RR): (48, 36728, 21, 61)
-[M::mem_pestat] analyzing insert size distribution for orientation FF...
-[M::mem_pestat] (25, 50, 75) percentile: (420, 660, 1774)
-[M::mem_pestat] low and high boundaries for computing mean and std.dev: (1, 4482)
-[M::mem_pestat] mean and std.dev: (784.68, 700.87)
-[M::mem_pestat] low and high boundaries for proper pairs: (1, 5836)
-[M::mem_pestat] analyzing insert size distribution for orientation FR...
+
 ~~~
 {: .output}
 
@@ -170,8 +130,8 @@ displayed below with the different fields highlighted.
 We will convert the SAM file to BAM format using the `samtools` program with the `view` command and tell this command that the input is in SAM format (`-S`) and to output BAM format (`-b`):
 
 ~~~
-$ cd ~/data/dc_workshop/data
-$ samtools view -S -b results/sam/SRR2584866.aligned.sam > results/bam/SRR2584866.aligned.bam
+$ cd ~/data/FlyCURE/results
+$ samtools view -S -b sam/A44.aligned.sam > bam/A44.aligned.bam
 ~~~
 {: .bash}
 
