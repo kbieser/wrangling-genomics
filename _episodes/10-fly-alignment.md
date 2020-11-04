@@ -3,7 +3,7 @@ title: "Variant Calling Workflow"
 teaching: 0
 exercises: 0
 questions:
-- "How do I find sequence variants between my sample and a reference genome?"
+- "How do I find sequence variants between my sample(s) and a reference genome?"
 objectives:
 - "Understand the steps involved in variant calling."
 - "Describe the types of data formats encountered during variant calling."
@@ -14,7 +14,7 @@ keypoints:
 - "There are many different file formats for storing genomics data. It's important to understand what type of information is contained in each file, and how it was derived."
 ---
 
-We mentioned before that we are working with files from a study of EMS mutated *D. melanogaster*. Now that we have looked at our data to make sure that it is high quality, and removed low-quality base calls, we can start the variant calling steps to identify unique SNPs for each mutant that may be responsible for the mutant phenotype. We will start by aligning each of our samples to the *D. melanogaster* BDGP6.28 reference genome (this it the most recent Ensemble release for *D. melanogaster*), and see what differences exist in our reads versus the reference genome.
+We mentioned before that we are working with files from a study of EMS mutated *D. melanogaster*. Now that we have looked at our data to make sure that it is high quality utilizing FASTQC, and removed low-quality base calls, we can start the variant calling steps to identify unique SNPs for each mutant that may be responsible for the mutant phenotype. We will start by aligning each of our samples to the *D. melanogaster* BDGP6.28 reference genome (this it the most recent Ensemble release for *D. melanogaster*), and see what differences exist in our reads versus the reference genome.
 
 # Alignment to a reference genome
 
@@ -33,17 +33,18 @@ The alignment process consists of two steps:
 
 # Setting up
 
-First we download the reference genome for *D. melanogaster* BDGP6.28. Although we could copy or move the file with `cp` or `mv`, most genomics workflows begin with a download step, so we will practice that here.
+First we need to download the reference genome for *D. melanogaster* BDGP6.28. Although we could copy or move the file with `cp` or `mv`, most genomics workflows begin with a download step, so we will practice that here.
 
-We first need to find the link for the genome at Ensemble.org. We are going to use the .gtf format. This stands for the gene transfer format (gtf) and hold information about gene structure in a tab-delimited text format.
-https://uswest.ensembl.org/Drosophila_melanogaster/Info/Index
-ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/
-Right click the link that says dna.toplevel.fa.gz
+We first need to find the link for the genome at [Ensemble.org](https://uswest.ensembl.org/index.html). We are going to use the .gtf format. This stands for the gene transfer format (gtf) and holds information about gene structure in a tab-delimited text format.
+[Link to most recent Ensemble release for *D. melanogaster*](https://uswest.ensembl.org/Drosophila_melanogaster/Info/Index)
+[Link to where the genome data is stored for the BDGP6.28 *D. melanogaster* genome release](ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/)
+Right click the link that says *Drosophila_melanogaster.BDGP6.28.101.chr.gtf.gz* and copy the link address. This address is what we need to use to download the genome into our Jupyter lab app.
+
 ~~~
 $ cd ~/data/FlyCURE
 $ mkdir -p ~/data/FlyCURE/ref_genome
-$ curl -L -o ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.28.101.chr.gtf.gz
-$ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz
+$ curl -L -o ~/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.28.101.chr.gtf.gz
+$ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf.gz
 ~~~
 {: .bash}
 
@@ -57,23 +58,32 @@ $ mkdir -p sam bam bcf vcf
 ~~~
 {: .bash}
 
-
 ### Index the reference genome
 Our first step is to index the reference genome for use by BWA. Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment.
 
 ~~~
-$ bwa index ~/data/FlyCURE/ref_genome/bdgp6.28.fa
+$ bwa index ~/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf
 ~~~
 {: .bash}
 
 While the index is created, you will see output that looks something like this:
 
 ~~~
-
+[bwa_index] Pack FASTA... 0.39 sec
+[bwa_index] Construct BWT for the packed sequence...
+[bwa_index] 0.00 seconds elapse.
+[bwa_index] Update BWT... 0.00 sec
+[bwa_index] Pack forward-only FASTA... 0.38 sec
+[bwa_index] Construct SA from BWT and Occ... 0.00 sec
+[main] Version: 0.7.17-r1188
+[main] CMD: bwa index /home/gea_user/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf
+[main] Real time: 0.827 sec; CPU: 0.775 sec
 ~~~
 {: .output}
 
 ### Align reads to reference genome
+
+NEED TO ADD THE WRITING OF A FOR LOOP SCRIPT FOR BWA MEM
 
 The alignment process consists of choosing an appropriate reference genome to map our reads against and then deciding on an
 aligner. We will use the BWA-MEM algorithm, which is the latest and is generally recommended for high-quality queries as it
@@ -90,20 +100,51 @@ Have a look at the [bwa options page](http://bio-bwa.sourceforge.net/bwa.shtml).
 parameters here, your use case might require a change of parameters. *NOTE: Always read the manual page for any tool before using
 and make sure the options you use are appropriate for your data.*
 
-We're going to start by aligning the reads from just one of the
-samples in our dataset (`SRR2584866`). Later, we'll be
-iterating this whole process on all of our sample files.
+Since we have used a number of for loops, let's write a script containing a for loop to run bwa mem.
 
 ~~~
-$ cd ~/data/FlyCURE
-$ bwa mem ref_genome/bdgp6.28 results/fastq_trimmed/A44_R1.trim.fastq.gz results/fastq_trimmed/A44_R2.trim.fastq.gz > results/sam/A44.aligned.sa
+$ #!/bin/bash
+# example
+# bwa mem ref.fa read1.fq read2.fq > aln-pe.sam
+# this script expects to me in the fastq_trimmed directory
+# it also expects the trimmed reads to have suffixes like shown
+# it also expects ref_genome to be the one listed where listed (very hard coded)
+
+mkdir -p ../bwa_out
+for read1 in *_R1.trim.fastq.gz; do
+  prefix=$(basename ${read1} _R1.trim.fastq.gz)
+
+  bwa mem ../../ref_genome/bdgp6.28.101.chr.gtf \
+  ${prefix}_R1.trim.fastq.gz \
+  ${prefix}_R2.trim.fastq.gz > ../bwa_out/${prefix}.sam &
+
+done
 ~~~
 {: .bash}
 
 You will see output that starts like this:
 
 ~~~
-
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+kbieser@a2e7c079c.cyverse.run$ [M::process] read 132378 sequences (10000135 bp)...
+[M::process] read 132380 sequences (10000107 bp)...
+[M::process] read 132388 sequences (10000047 bp)...
+[M::process] read 132390 sequences (10000081 bp)...
+[M::process] read 132386 sequences (10000109 bp)...
+[M::process] read 132386 sequences (10000013 bp)...
+[M::process] read 132376 sequences (10000149 bp)...
+[M::process] read 132390 sequences (10000033 bp)...
+[M::process] read 132382 sequences (10000017 bp)...
+[M::process] read 132384 sequences (10000050 bp)...
 ~~~
 {: .output}
 
@@ -147,7 +188,7 @@ You may not see this output, but you should see SRR2584866.aligned.bam in the ba
 Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output.
 
 ~~~
-$ cd ~/data/dc_workshop/data
+$ cd ~/data/FlyCURE
 $ samtools sort -o results/bam/SRR2584866.aligned.sorted.bam results/bam/SRR2584866.aligned.bam
 ~~~
 {: .bash}
@@ -164,7 +205,7 @@ SAM/BAM files can be sorted in multiple ways, e.g. by location of alignment on t
 You can use samtools to learn more about this bam file as well.
 
 ~~~
-$ cd ~/data/dc_workshop/data
+$ cd ~/data/FlyCURE
 $ samtools flagstat results/bam/SRR2584866.aligned.sorted.bam
 ~~~
 {: .bash}
@@ -205,7 +246,7 @@ use the command `mpileup`. The flag `-O b` tells bcftools to generate a
 bcf format output file, `-o` specifies where to write the output file, and `-f` flags the path to the reference genome:
 
 ~~~
-$ cd ~/data/dc_workshop/data
+$ cd ~/data/FlyCURE
 $ bcftools mpileup -O b -o results/bcf/SRR2584866_raw.bcf \
 -f ~/data/ref_genome/ecoli_rel606.fasta results/bam/SRR2584866.aligned.sorted.bam
 ~~~
@@ -223,7 +264,7 @@ We have now generated a file with coverage information for every base.
 Identify SNPs using bcftools `call`. We have to specify ploidy with the flag `--ploidy`, which is one for the haploid *E. coli*. `-m` allows for multiallelic and rare-variant calling, `-v` tells the program to output variant sites only (not every site in the genome), and `-o` specifies where to write the output file:
 
 ~~~
-$ cd ~/data/dc_workshop/data
+$ cd ~/data/FlyCURE
 $ bcftools call --ploidy 1 -m -v -o results/bcf/SRR2584866_variants.vcf results/bcf/SRR2584866_raw.bcf
 ~~~
 {: .bash}
