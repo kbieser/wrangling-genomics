@@ -44,7 +44,7 @@ Often times, the first step in a bioinformatic workflow is getting the data you 
 
 A raw_illumina directory was received directly from the Illumina sequencer. There are 4 quadrants on the flow cell and we want to merge these into one `.fastq` file to work with. This file merging has been done in advance for you by utilizing the cat and redirection command.
 
-Launch your app as you always have with the dataset set to: /iplant/home/your_username/data. (Replace the "your_username" with your actual username). Once the app is launched, open and run the first cell of the Persistance Notebook and enter your password. Once that is completed, open the terminal and enter the following commands. Replace "your_username" with your actual username.
+Launch your app as you always have with the dataset set to: `/iplant/home/your_username/data`. (Replace the `your_username` with your actual username). Once the app is launched, open and run the first cell of the Persistance Notebook and enter your password. Once that is completed, open the terminal and enter the following commands. Replace `your_username` with your actual username.
 
 ~~~
 irysnc -r i:/iplant/home/kbieser/Fly_CURE \
@@ -54,7 +54,7 @@ i:/iplant/home/your_username/data/Fly_CURE
 
 Expect this to take a little while. To see that this was successful, if you return to the Discovery Environment home page and select `Data`, you should see a FlyCURE folder in your data folder.
 
-Return to your Persistance Notebook and run cell 2. Once that cell completes running, `Complete and Save Outputs` for the app. Now you may re-launch the using the same dataset as always (/iplant/home/your_username/data). (Continue to launch this way and run your Persistance Notebook each time). This will take a little while as you now have 10 new genomic sequences in your directory. Once JupyterLab opens you should now see a FlyCURE directory containing two subdirectories: `fastq_joined` (the paired end fastq sequencing files for each of the 10 fly stocks) and `adapters` (a file you will need for running FastQC).
+Return to your Persistance Notebook and run cell 2. Once that cell completes running, `Complete and Save Outputs` for the app. Now you may re-launch the using the same dataset as always (`/iplant/home/your_username/data`). (Continue to launch this way and run your Persistance Notebook each time). This will take a little while as you now have 10 new genomic sequences in your directory. Once JupyterLab opens you should now see a FlyCURE directory containing two subdirectories: `fastq_joined` (the paired end fastq sequencing files for each of the 10 fly stocks) and `adapters` (a file you will need for running FastQC).
 
 The data in the `fastq_joined` directory comes in a compressed format, which is why there is a `.gz` at the end of the file names. This makes it faster to transfer, and allows it to take up less space on our computer. Let's unzip one of the files so that we can look at the fastq format.
 
