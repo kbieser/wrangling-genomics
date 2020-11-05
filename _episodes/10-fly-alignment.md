@@ -37,14 +37,14 @@ First we need to download the reference genome for *D. melanogaster* BDGP6.28. A
 
 We first need to find the link for the genome at [Ensemble.org](https://uswest.ensembl.org/index.html). We are going to use the .gtf format. This stands for the gene transfer format (gtf) and holds information about gene structure in a tab-delimited text format.
 [Link to most recent Ensemble release for *D. melanogaster*](https://uswest.ensembl.org/Drosophila_melanogaster/Info/Index)
-[Link to where the genome data is stored for the BDGP6.28 *D. melanogaster* genome release](ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/)
+[Link to where the genome data is stored for the BDGP6.28 *D. melanogaster* genome release](ftp://ftp.ensembl.org/pub/release-101/fasta/drosophila_melanogaster/dna/Drosophila_melanogaster.BDGP6.28.dna.toplevel.fa.gz
 Right click the link that says *Drosophila_melanogaster.BDGP6.28.101.chr.gtf.gz* and copy the link address. This address is what we need to use to download the genome into our Jupyter lab app (link provided in the set of commands below).
 
 ~~~
 $ cd ~/data/FlyCURE
 $ mkdir -p ~/data/FlyCURE/ref_genome
-$ curl -L -o ~/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.28.101.chr.gtf.gz
-$ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf.gz
+$ curl -L -o ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/drosophila_melanogaster/dna/Drosophila_melanogaster.BDGP6.28.dna.toplevel.fa.gz
+$ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz
 ~~~
 {: .bash}
 
@@ -62,22 +62,17 @@ $ mkdir -p sam bam bcf vcf
 Our first step is to index the reference genome for use by BWA. Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment.
 
 ~~~
-$ bwa index ~/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf
+$ bwa index ~/data/FlyCURE/ref_genome/bdgp6.28.fa
 ~~~
 {: .bash}
 
 While the index is created, you will see output that looks something like this:
 
 ~~~
-[bwa_index] Pack FASTA... 0.39 sec
+[bwa_index] Pack FASTA... 1.49 sec
 [bwa_index] Construct BWT for the packed sequence...
-[bwa_index] 0.00 seconds elapse.
-[bwa_index] Update BWT... 0.00 sec
-[bwa_index] Pack forward-only FASTA... 0.38 sec
-[bwa_index] Construct SA from BWT and Occ... 0.00 sec
-[main] Version: 0.7.17-r1188
-[main] CMD: bwa index /home/gea_user/data/FlyCURE/ref_genome/bdgp6.28.101.chr.gtf
-[main] Real time: 0.827 sec; CPU: 0.775 sec
+[BWTIncCreate] textLength=287452004, availableWord=32225820
+[BWTIncConstructFromPacked] 10 iterations done. 53158068 characters processed.
 ~~~
 {: .output}
 
@@ -128,8 +123,8 @@ nano bwa.sh
 
 # below is our example for a single sample by replacing sample names for the general example above. It also includes the directory where the sample is found or put.
 # $ bwa mem ref_genome/Drosophila_melanogaster.BDGP6.22.97.chr.fa \
-# > fastq_trimmed/A44_R1.trim.fastq.gz \  
-# > fastq_trimmed/A44_R2.trim.fastq.gz > bwa_out/A44.sam &
+#   fastq_trimmed/A44_R1.trim.fastq.gz \  
+#   fastq_trimmed/A44_R2.trim.fastq.gz > bwa_out/A44.sam &
 ~~~
 {: .bash}
 
@@ -146,7 +141,7 @@ This gives us the building blocks or formula to start writing our script. Within
 mkdir -p ../bwa_out
 for read1 in *_R1.trim.fastq.gz; do
   prefix=$(basename ${read1} _R1.trim.fastq.gz)
-  bwa mem ../../ref_genome/bdgp6.28.101.chr.gtf \
+  bwa mem ../../ref_genome/bdgp6.28.fa \
   ${prefix}_R1.trim.fastq.gz \
   ${prefix}_R2.trim.fastq.gz > ../bwa_out/${prefix}.sam &
 done
@@ -199,6 +194,11 @@ kbieser@a2e7c079c.cyverse.run$ [M::process] read 132378 sequences (10000135 bp).
 [M::process] read 132384 sequences (10000050 bp)...
 ~~~
 {: .output}
+
+Zip the sam files to compress them
+
+~~~
+gzip *.sam
 
 
 #### SAM/BAM format
