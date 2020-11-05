@@ -101,8 +101,8 @@ If we break this down into parts:
 Let's open nano and start building our `bwa.sh` script. I'm going to start by writing a number of comments to help me build the script and so I can remember what I did for the future.
 
 ~~~
-cd ~/data/FlyCURE/scripts
-nano bwa.sh
+$ cd ~/data/FlyCURE/scripts
+$ nano bwa.sh
 ~~~
 {: .bash}
 
@@ -147,15 +147,15 @@ Lastly, the loop says to redirect the output `>` to our new directory and name t
 The last step is to save the script, make it executable, and run the script.
 
 ~~~
- chmod +x bwa.sh
- ~~~
- {: .bash}
+$ chmod +x bwa.sh
+~~~
+{: .bash}
 
 You should see the color change once it is executable. Move into your `fastq_trimmed/` and run the script.
 
 ~~~
-cd ~/data/FlyCURE/results/fastq_trimmed
-../../scripts/bwa.sh
+$ cd ~/data/FlyCURE/results/fastq_trimmed
+$ ../../scripts/bwa.sh
 ~~~
 {: .bash}
 

@@ -22,17 +22,6 @@ have time to go into detail about the features of the SAM format, the paper by
 
 **The compressed binary version of SAM is called a BAM file.** We use this version to reduce size and to allow for *indexing*, which enables efficient random access of the data contained within the file.
 
-The file begins with a **header**, which is optional. The header is used to describe the source of data, reference sequence, method of
-alignment, etc., this will change depending on the aligner being used. Following the header is the **alignment section**. Each line
-that follows corresponds to alignment information for a single read. Each alignment line has **11 mandatory fields** for essential
-mapping information and a variable number of other fields for aligner specific information. An example entry from a SAM file is
-displayed below with the different fields highlighted.
-
-![sam_bam1](../img/sam_bam.png)
-
-
-![sam_bam2](../img/sam_bam3.png)
-
 We will convert the SAM file to BAM format using the `samtools` program with the `view` command and tell this command that the input is in SAM format and to output BAM format (`-b`):
 
 ~~~
@@ -43,7 +32,10 @@ $ nano sam_bam.sh
 We are going to begin building a series of `for` loops to work our way through a series of steps that will convert or SAM files to BAM files, sort the BAM files, remove PCR duplicates, and index the BAM files prior to generating variant calls.
 
 ## Step 1: SAM to BAM Conversion
-We are going to start with comments and then some criteria we will utilize for all of the upcoming `for` loops. As long as we run the scripts in order, we can make an intermediate directory to hold the files as an output for one step which becomes the input for the next step. By doing this, we can minimize how many different directories are created during the analyses. We will also add in some `echo` lines so that we can visually see that the process is occurring properly. For the SAM to BAM conversion, we are going to use samtools view as we have for a previous lesson.   
+We are going to start with comments and then some criteria we will utilize for all of the upcoming `for` loops. As long as we run the scripts in order, we can make an intermediate directory to hold the files as an output for one step which becomes the input for the next step. By doing this, we can minimize how many different directories are created during the analyses. We will also add in some `echo` lines so that we can visually see that the process is occurring properly. For the SAM to BAM conversion, we are going to use samtools view as we have for a previous lesson.  
+
+ ![sam_to_bam](../img/sam_to_bam.png)
+ Figure 1: A break down of the samtools view command.
 
 ~~~
 #!/bin/bash
@@ -115,6 +107,7 @@ A44.bam  B-2-13_S1.bam  B-2-16_S2.bam  Control.bam  cos2.bam  H22.bam  L31.bam  
 Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output.
 
 ![samtools_sort](../img/samtools_sort.png)
+Figure 2: A break down of the samtools sort command.
 
 ~~~
 $ cd ~/data/FlyCURE/scripts
@@ -152,7 +145,7 @@ done
 Make the script executable and run. This script will take some time to run.
 ~~~
 $ chmod +x bam_sort.sh
-$ cd ~/data/FlyCURE/results/intermediate_bams
+$ cd ~/data/FlyCURE/results/bwa_out
 $ ../../scripts/bam_sort.sh
 ~~~
 {: .bash}
@@ -184,6 +177,13 @@ samtools sort -n -@4 -o ../intermediate_bams/N-1-4_S5.nsort.bam ../intermediate_
 ~~~
 {: .output}
 
+NEED TO CHECK OUTPUT AGAIN
+~~~
+A44.bam        B-2-16_S2.bam        Control.bam        cos2.bam        H22.bam        L31.bam       L-3-2_S3.nsort.bam  N-1-4_S5.bam
+B-2-13_S1.bam  B-2-16_S2.nsort.bam  Control.nsort.bam  cos2.nsort.bam  H22.nsort.bam  L-3-2_S3.bam  N-1-1_S4.bam        N-1-4_S5.nsort.bam
+~~~
+{: .ouptut}
+
 
 ## Step 3: Samtools fixmate
 
@@ -192,10 +192,50 @@ SAM/BAM files can be sorted in multiple ways, e.g. by location of alignment on t
 You can use samtools to learn more about this bam file as well.
 
 ~~~
-$ cd ~/data/FlyCURE
-$ samtools flagstat results/bam/SRR2584866.aligned.sorted.bam
+$ cd ~/data/FlyCURE/scripts
+$ nano fixmate.sh
 ~~~
 {: .bash}
+
+~~~
+#!/bin/bash
+
+# what I do: fixmate on bam
+
+# run me in the folder with sam.gz files (~/data/FlyCURE/results/bwa_out)
+
+# $i = each of the .sam.gz files that were created during the first alignment step and are used as the input files
+
+cpu=4
+
+inter='../intermediate_bams'
+mkdir -p $inter
+
+clean='../clean_bams'
+mkdir -p $clean
+
+# fix mate loop
+for i in *.sam.gz; do
+  echo "fixmate $i"
+  prefix=$(basename $i .sam.gz)
+  echo samtools fixmate -r -m -@${cpu} ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.fixmate.bam &
+  samtools fixmate -r -m -@${cpu} ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.fixmate.bam &
+done
+~~~
+{: .bash}
+
+Make the script executable and run. This script will take some time to run.
+~~~
+$ chmod +x fixmate.sh
+$ cd ~/data/FlyCURE/results/bwa_out
+$ ../../scripts/fixmate.sh
+~~~
+{: .bash}
+
+~~~
+
+~~~
+{: .output}
 
 This will give you the following statistics about your sorted bam file:
 
