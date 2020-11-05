@@ -47,7 +47,7 @@ A raw_illumina directory was received directly from the Illumina sequencer. Ther
 Launch your app as you always have with the dataset set to: `/iplant/home/your_username/data`. (Replace the `your_username` with your actual username). Once the app is launched, open and run the first cell of the Persistance Notebook and enter your password. Once that is completed, open the terminal and enter the following commands. Replace `your_username` with your actual username.
 
 ~~~
-irysnc -r i:/iplant/home/kbieser/Fly_CURE \
+$ irysnc -r i:/iplant/home/kbieser/Fly_CURE \
 i:/iplant/home/your_username/data/Fly_CURE
 ~~~
 {: .bash}
@@ -452,15 +452,15 @@ If you want to run FastQC on all of your files at once and move the outputs to t
 Let's start with making a scripts directory to save all the scripts we will be making
 
 ~~~
-cd ~/data/FlyCURE
-mkdir scripts
+$ cd ~/data/FlyCURE
+$ mkdir scripts
 ~~~
 {: .bash}
 
 Move into the scripts directory
 
 ~~~
-cd scripts
+$ cd scripts
 ~~~
 {: .bash}
 
@@ -490,15 +490,15 @@ Save the script.
 To run the script you must make it executable.
 
 ~~~
-chmod +x fastqc.sh
+$ chmod +x fastqc.sh
 ~~~
 {: .bash}
 
 Now run the script! Navigate to the correct directory where the script should be run and then call the script.
 
 ~~~
-cd ~/data/FlyCURE/fastq_joined
-../scripts/fastqc.sh &
+$ cd ~/data/FlyCURE/fastq_joined
+$ ../scripts/fastqc.sh &
 ~~~
 {: .bash}
 
