@@ -114,6 +114,8 @@ A44.bam  B-2-13_S1.bam  B-2-16_S2.bam  Control.bam  cos2.bam  H22.bam  L31.bam  
 
 Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output.
 
+![samtools_sort](../img/samtools_sort.png)
+
 ~~~
 $ cd ~/data/FlyCURE/scripts
 $ nano bam_sort.sh
