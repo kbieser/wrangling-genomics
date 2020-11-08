@@ -58,9 +58,11 @@ mkdir -p $clean
 for i in *.sam.gz; do
   echo "converting $i to bam file"
   prefix=$(basename $i .sam.gz)
-  echo samtools view -b -@${cpu} -o ${inter}/${prefix}.bam $i
+  echo samtools view -S -b -@${cpu} -o ${inter}/${prefix}.bam $i
   samtools view -b -@${cpu} -o ${inter}/${prefix}.bam $i &
 done
+wait
+echo BAM DONE
 ~~~
 {: .bash}
 
@@ -71,7 +73,7 @@ $ ../../scripts/sam_bam.sh
 ~~~
 {: .bash}
 
-What you should see when the samtools view starts running. This script should run quickly.
+What you should see when the samtools view starts running. This script should run in 10-20 minutes.
 ~~~
 converting A44.sam.gz to bam file
 samtools view -b -@4 -o ../intermediate_bams/A44.bam A44.sam.gz
@@ -96,7 +98,7 @@ samtools view -b -@4 -o ../intermediate_bams/N-1-4_S5.bam N-1-4_S5.sam.gz
 ~~~
 {: .output}
 
-What you should see once samtools view is completed
+What you should see once samtools view is completed in your `intermediate_bams` directory.
 ~~~
 A44.bam  B-2-13_S1.bam  B-2-16_S2.bam  Control.bam  cos2.bam  H22.bam  L31.bam  L-3-2_S3.bam  N-1-1_S4.bam  N-1-4_S5.bam
 ~~~
@@ -139,10 +141,12 @@ for i in *.sam.gz; do
   echo samtools sort -n -@${cpu} -o ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.bam &
   samtools sort -n -@${cpu} -o ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.bam &
 done
+wait
+echo SORT DONE
 ~~~
 {: .bash}
 
-Make the script executable and run. This script will take some time to run.
+Make the script executable and run. This script will take some time to run. If you open a second terminal and type `top`, you should see `samtools running` once you have deployed the script.
 ~~~
 $ chmod +x bam_sort.sh
 $ cd ~/data/FlyCURE/results/bwa_out

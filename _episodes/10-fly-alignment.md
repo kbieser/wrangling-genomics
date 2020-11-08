@@ -42,9 +42,9 @@ Right click the link that says *Drosophila_melanogaster.BDGP6.28.dna.toplevel.fa
 
 ~~~
 $ cd ~/data/FlyCURE
-$ mkdir -p ~/data/FlyCURE/ref_genome
-$ curl -L -o ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/drosophila_melanogaster/dna/Drosophila_melanogaster.BDGP6.28.dna.toplevel.fa.gz
-$ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz
+$ mkdir -p ref_genome
+$ curl -L -o ref_genome/bdgp6.28.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/drosophila_melanogaster/dna/Drosophila_melanogaster.BDGP6.28.dna.toplevel.fa.gz
+$ gunzip ref_genome/bdgp6.28.fa.gz
 ~~~
 {: .bash}
 
@@ -52,7 +52,7 @@ $ gunzip ~/data/FlyCURE/ref_genome/bdgp6.28.fa.gz
 Our first step is to index the reference genome for use by BWA. Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment.
 
 ~~~
-$ bwa index ~/data/FlyCURE/ref_genome/bdgp6.28.fa
+$ bwa index ref_genome/bdgp6.28.fa
 ~~~
 {: .bash}
 
@@ -63,6 +63,21 @@ While the index is created, you will see output that looks something like this:
 [bwa_index] Construct BWT for the packed sequence...
 [BWTIncCreate] textLength=287452004, availableWord=32225820
 [BWTIncConstructFromPacked] 10 iterations done. 53158068 characters processed.
+[BWTIncConstructFromPacked] 20 iterations done. 98205524 characters processed.
+[BWTIncConstructFromPacked] 30 iterations done. 138239796 characters processed.
+[BWTIncConstructFromPacked] 40 iterations done. 173818340 characters processed.
+[BWTIncConstructFromPacked] 50 iterations done. 205436596 characters processed.
+[BWTIncConstructFromPacked] 60 iterations done. 233534948 characters processed.
+[BWTIncConstructFromPacked] 70 iterations done. 258504820 characters processed.
+[BWTIncConstructFromPacked] 80 iterations done. 280694052 characters processed.
+[bwt_gen] Finished constructing BWT in 84 iterations.
+[bwa_index] 67.49 seconds elapse.
+[bwa_index] Update BWT... 0.57 sec
+[bwa_index] Pack forward-only FASTA... 0.46 sec
+[bwa_index] Construct SA from BWT and Occ... 36.44 sec
+[main] Version: 0.7.17-r1188
+[main] CMD: bwa index ref_genome/bdgp6.28.fa
+[main] Real time: 106.505 sec; CPU: 105.788 sec
 ~~~
 {: .output}
 
@@ -72,7 +87,7 @@ The alignment process consists of choosing an appropriate reference genome to ma
 aligner. We will use the BWA-MEM algorithm, which is the latest and is generally recommended for high-quality queries as it
 is faster and more accurate.
 
-An example of what a `bwa` command looks like is below for a single fly stock. This command will not run, as we are using a different reference genome. But what we can do is it as a foundation to build our own bwa script.
+An example of what a `bwa` command looks like is below for a single fly stock. This command **will not run**, as we are using a different reference genome. But what we can do is it as a foundation to build our own bwa script.
 
 ~~~
 $ bwa mem ref_genome/Drosophila_melanogaster.BDGP6.22.97.chr.fa \
@@ -135,6 +150,8 @@ for read1 in *_R1.trim.fastq.gz; do
   ${prefix}_R1.trim.fastq.gz \
   ${prefix}_R2.trim.fastq.gz > ../bwa_out/${prefix}.sam &
 done
+wait
+echo BWA DONE
 ~~~
 {: .bash}
 
@@ -159,7 +176,7 @@ $ ../../scripts/bwa.sh
 ~~~
 {: .bash}
 
-You will see output that starts like this:
+You will see output that starts like this and this will take a few hours. If you want to monitor the progress of any of your scripts, open a second terminal using the `+` at the top left of JupyterLab. Open the terminal and type `top`. This will load all the processes you are running so you can watch them. You can do this for any of the upcoming scripts. I've also added `wait` and `echo DONE` to the scripts so that you will have a visual in your terminal when all the files are done. You seeing this `DONE` should correspond with when you see your processes stop in `top`.
 
 ~~~
 [M::bwa_idx_load_from_disk] read 0 ALT contigs
@@ -174,14 +191,15 @@ You will see output that starts like this:
 [M::mem_pestat] (25, 50, 75) percentile: (311, 358, 411)
 [M::mem_pestat] low and high boundaries for computing mean and std.dev: (111, 611)
 [M::mem_pestat] mean and std.dev: (361.89, 76.20)
-...
 ~~~
 {: .output}
 
-Let's compress the files to make them take up less space and our conversions go a little faster by zipping the .sam files. Again, this step is likely to take awhile.
+Let's compress the files to make them take up less space and our conversions go a little faster by zipping the .sam files. Again, this step is likely to take a few hours. I let mine run overnight.
 
 ~~~
 $ cd ~/data/FlyCURE/results/bwa_out
-$ gzip *.sam
+$ gzip *.sam \
+> wait \
+> echo SAM DONE
 ~~~
 {: .bash}
