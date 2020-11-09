@@ -5,14 +5,15 @@ exercises: 0
 questions:
 - "How do I convert sam to bam files to sort and index the alignment?"
 objectives:
-- "Understand the steps involved in variant calling."
-- "Describe the types of data formats encountered during variant calling."
-- "Use command line tools to perform variant calling."
+- "Understand why we convert from sam to bam."
+- "Describe the steps involved in using samtools on our bam files."
 keypoints:
 - "Bioinformatic command line tools are collections of commands that can be used to carry out bioinformatic analyses."
 - "To use most powerful bioinformatic tools, you'll need to use the command line."
 - "There are many different file formats for storing genomics data. It's important to understand what type of information is contained in each file, and how it was derived."
 ---
+
+**Launch the app from username/data and RUN CELL ONE OF YOUR PERSISTANCE NOTEBOOK before starting.**
 
 # SAM/BAM format
 The [SAM file](https://genome.sph.umich.edu/wiki/SAM),
@@ -22,31 +23,70 @@ have time to go into detail about the features of the SAM format, the paper by
 
 **The compressed binary version of SAM is called a BAM file.** We use this version to reduce size and to allow for *indexing*, which enables efficient random access of the data contained within the file.
 
-We will convert the SAM file to BAM format using the `samtools` program with the `view` command and tell this command that the input is in SAM format and to output BAM format (`-b`):
+We are going to be utilizing a series of tools from the program Samtools which will eventually allow us to identify SNPs unique to each mutant. Samtools allows for manipulating alignment files in the BAM format. The imported file to Samtools is the SAM (Sequence Alignment/MAP) format which will be sorted, merged, and indexed allowing us to more easily retrieve reads in our region of interest. [Link to manual pages for Samtools](http://www.htslib.org/doc/samtools.html).    
+
+There are a series of 7 `for loops` that we will run. I will describe each step first.
+
+## Step 1: SAM to BAM Conversion.
+
+Samtools only works with the BAM file format, and thus we must first convert our SAM to BAM using samtools view. We will be utilzing `for loops` to minimize errors and improve efficiency. By defining variables early in the process, we can use these same variable names in all of our `for loops` rather than utilizing individual sample names (Figure 1). In addition to the working components of the for loop, we will also add echo commands which will just provide us with a visual cue that our commands are running.  
+
+![for_loop](../img/samtools_view.png)
+Figure 1: Breakdown of a `for loop`. This example provides a breakdown of the samtools view `for loop`. The formula for the `for loop` will remain mostly the same as we proceed through each of the samtools steps.
+
+## Step 2: Sort BAM by name
+
+We will use samtools sort twice during our analysis. For this sort, we are going sort our BAMs by name. This will generate our reads in alphabetical order with the read name at the top of the file. Name sorting is required for the next step in the process.
+
+## Step 3: Fixmate on BAMs
+
+Next we will use samtools fixmate which only works on name sorted BAMs. Fixmate will fix any errors that were made while aligning the paired-end reads.
+
+## Step 4: Sort BAM by coordinates
+
+Once the paired-end mates are fixed, we will use samtools sort a second time this time sorting by genomic coordinates. This is the default sorting method of samtools sort.
+
+## Step 5: Mark and remove PCR duplicates
+
+PCR duplicates are removed by a random sampling of the genome using samtools markdup. If you do random sampling of a genome, it is not likely you would see a bunch of sequences starting and ending at the same locations due to how the libraries for sequencing are generated. If there are samples that are represented at a statistically higher rate, these samples were likely overamplified, thus we remove them from the analysis to reduce our bias.
+
+## Step 6: Index the markdup BAMs
+
+Once we have removed the marked duplicates from our data set, we then index the alignments using samtools index. Indexing allows for a more efficient way to search for sequences of interest just as an index of a book helps you find the topic of interest more quickly.
+
+## Step 7:
+
+Lastly, we will calculate statistics of our reads using samtools flagstat.
+
+To build the script, we are going to link the seven `for loops` together by using the `wait` command between each loop. When `wait` is used, the next loop will not begin until the sample has finished the first loop and so on. We also need to define some directories that we want our outputs sent to and where our inputs are located. I have started the script with commenting out the steps as a reminder to ourselves. The next set of comments describe where we want to launch the script, how we can log and watch the progress of the script, and the names we are going to use for our 2 output directories. We will want our results to land in `~/data/FlyCURE/results`. Our bwa_out directory is located in this location. Thus, we are going to create one directory called `intermediate_bams` to store results in the middle of the process and a second directory called `clean` where our final results will be output to. We have to give the relative path from where we are located when we launch the script. We start here: `~/data/FlyCURE/results/bwa_out` thus, to achieve this `~/data/FlyCURE/results/intermediate_bams` and `~/data/FlyCURE/results/clean` we can give the path of `../intermediate_bams` and `../clean`. It's standard notation to indent the lines between the `for` and the `done` to give you a visualization of what is in the `for loop`.
+
+Create the script by opening nano and copying and pasting the script from here into your text file.
 
 ~~~
 $ cd ~/data/FlyCURE/scripts
-$ nano sam_bam.sh
+$ nano bam_factory.sh
 ~~~
-
-We are going to begin building a series of `for` loops to work our way through a series of steps that will convert or SAM files to BAM files, sort the BAM files, remove PCR duplicates, and index the BAM files prior to generating variant calls.
-
-## Step 1: SAM to BAM Conversion
-We are going to start with comments and then some criteria we will utilize for all of the upcoming `for` loops. As long as we run the scripts in order, we can make an intermediate directory to hold the files as an output for one step which becomes the input for the next step. By doing this, we can minimize how many different directories are created during the analyses. We will also add in some `echo` lines so that we can visually see that the process is occurring properly. For the SAM to BAM conversion, we are going to use samtools view as we have for a previous lesson.  
-
- ![sam_to_bam](../img/sam_to_bam.png)
- Figure 1: A break down of the samtools view command.
+{: .bash}
 
 ~~~
 #!/bin/bash
 
-# what I do: sam to bam conversion
+# what I do:
 
-# run me in the folder with sam.gz files (~/data/FlyCURE/results/bwa_out)
+# step 1: sam to bam conversion
+# step 2: sort bam by name (samtools sort -n)
+# step 3: fixmate on bam
+# step 4: samtools sort by coordinate
+# step 5: mark duplicates +remove (samtools markdup -r)
+# step 6: indexes the markdup bam
+# step 7: calculates the stats on that file
 
-# $i = each of the .sam.gz files that were created during the first alignment step and are used as the input files
-
-cpu=4
+# run me in the folder with sam.gz (~/data/FlyCURE/results/bwa_out)
+# if you want to save literal commands to a log file, run me like
+# ../../scripts/bam_factory.sh > mylogfile.txt
+# therefore,
+# intermediate_bams folder is defined below as $inter
+# clean folder is defined below as $clean
 
 inter='../intermediate_bams'
 mkdir -p $inter
@@ -58,544 +98,100 @@ mkdir -p $clean
 for i in *.sam.gz; do
   echo "converting $i to bam file"
   prefix=$(basename $i .sam.gz)
-  echo samtools view -S -b -@${cpu} -o ${inter}/${prefix}.bam $i
-  samtools view -b -@${cpu} -o ${inter}/${prefix}.bam $i &
+  echo samtools view -b -o ${inter}/${prefix}.bam $i
+  samtools view -b -o ${inter}/${prefix}.bam $i &
 done
 wait
-echo BAM DONE
-~~~
-{: .bash}
-
-~~~
-$ chmod +x sam_bam.sh
-$ cd ~/data/FlyCURE/results/bwa_out
-$ ../../scripts/sam_bam.sh
-~~~
-{: .bash}
-
-What you should see when the samtools view starts running. This script should run in 10-20 minutes.
-~~~
-converting A44.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/A44.bam A44.sam.gz
-converting B-2-13_S1.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/B-2-13_S1.bam B-2-13_S1.sam.gz
-converting B-2-16_S2.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/B-2-16_S2.bam B-2-16_S2.sam.gz
-converting Control.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/Control.bam Control.sam.gz
-converting cos2.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/cos2.bam cos2.sam.gz
-converting H22.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/H22.bam H22.sam.gz
-converting L31.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/L31.bam L31.sam.gz
-converting L-3-2_S3.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/L-3-2_S3.bam L-3-2_S3.sam.gz
-converting N-1-1_S4.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/N-1-1_S4.bam N-1-1_S4.sam.gz
-converting N-1-4_S5.sam.gz to bam file
-samtools view -b -@4 -o ../intermediate_bams/N-1-4_S5.bam N-1-4_S5.sam.gz
-~~~
-{: .output}
-
-What you should see once samtools view is completed in your `intermediate_bams` directory.
-~~~
-A44.bam  B-2-13_S1.bam  B-2-16_S2.bam  Control.bam  cos2.bam  H22.bam  L31.bam  L-3-2_S3.bam  N-1-1_S4.bam  N-1-4_S5.bam
-~~~
-{: .output}
-
-## Sort BAM file by name
-
-Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output (`-o`), and then we sort by read names (`-n`). For some reason Jupyter lab can't handle trying to process all the samples at once for this process. As such, we are going to write one for loop and use a `wait` command between each additional loop. The only change in the for loop you will make will be the sample name. Everything else will stay the same. What this will allow, is bam sort will run on a single sample at a time before moving onto the next sample.
-
-[Link to samtools sort](http://www.htslib.org/doc/samtools-sort.html)
-
-![samtools_sort](../img/samtools_sort.png)
-Figure 2: A break down of the samtools sort command.
-
-~~~
-$ cd ~/data/FlyCURE/scripts
-$ nano bam_sort.sh
-~~~
-{: .bash}
-
-~~~
-#!/bin/bash
-
-# what I do: sort bam by name (samtools sort -n)
-
-# run me in the folder with .bam files (~/data/FlyCURE/results/intermediate_bams)
-
-# $i = each of the .bam files that were created during the first alignment step and are used as the input files
-
-cpu=4
 
 # sorting by name loop
-for i in A44.bam; do
+for i in *.sam.gz; do
   echo "name sorting $i"
-  prefix=$(basename $i .bam)
-  echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-  samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+  prefix=$(basename $i .sam.gz)
+  echo samtools sort -n -o ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.bam &
+  samtools sort -n -o ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.bam &
 done
 wait
-for i in B-2-13_S1.bam; do
-  echo "name sorting $i"
-  prefix=$(basename $i .bam)
-  echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-  samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-done
-wait
-  for i in B-2-16_S2.bam; do
-    echo "name sorting $i"
-    prefix=$(basename $i .bam)
-    echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-    samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-done
-wait
-for i in Control.bam; do
-  echo "name sorting $i"
-  prefix=$(basename $i .bam)
-  echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-  samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
-done
-wait
-# Repeat for the remaining 6 samples to complete this script.
-echo SORT DONE
-~~~
-{: .bash}
-
-Make the script executable and run. This script will likely take a few hours. Be patient and wait for the command prompt to return. If you open a second terminal and type `top`, you should see `samtools running` once you have deployed the script.
-
-~~~
-$ chmod +x bam_sort.sh
-$ cd ~/data/FlyCURE/results/intermediate_bams
-$ ../../scripts/bam_sort.sh
-~~~
-{: .bash}
-
-~~~
-name sorting A44.bam
-samtools sort -n -@4 -o A44.nsort.bam A44.bam
-[bam_sort_core] merging from 12 files and 4 in-memory blocks...
-name sorting B-2-13_S1.bam
-samtools sort -n -@4 -o B-2-13_S1.nsort.bam B-2-13_S1.bam
-[bam_sort_core] merging from 16 files and 4 in-memory blocks...
-name sorting B-2-16_S2.bam
-samtools sort -n -@4 -o B-2-16_S2.nsort.bam B-2-16_S2.bam
-[bam_sort_core] merging from 16 files and 4 in-memory blocks...
-...
-SORT DONE
-~~~
-{: .output}
-
-When completed, you should have an `*.nsort.bam` for each of the 10 samples.
-~~~
-A44.bam        B-2-13_S1.bam        B-2-16_S2.bam        Control.bam        cos2.bam        H22.bam        L31.bam        L-3-2_S3.bam        N-1-1_S4.bam        N-1-4_S5.bam
-A44.nsort.bam  B-2-13_S1.nsort.bam  B-2-16_S2.nsort.bam  Control.nsort.bam  cos2.nsort.bam  H22.nsort.bam  L31.nsort.bam  L-3-2_S3.nsort.bam  N-1-1_S4.nsort.bam  N-1-4_S5.nsort.bam
-~~~
-{: .ouptut}
-
-
-## Step 3: Samtools fixmate
-
-SAM/BAM files can be sorted in multiple ways, e.g. by location of alignment on the chromosome, by read name, etc. It is important to be aware that different alignment tools will output differently sorted SAM/BAM, and different downstream tools require differently sorted alignment files as input. The samtools fixmate fills in mate coordinates from the PE reads from name-sorted alignments. We will use the `-m` flag which will be used by the program `markdup` which will select the best reads to keep. We will also use the `-r` flag which will remove any secondary and unmapped reads.
-
-[Link to samtools fixmate](http://www.htslib.org/doc/samtools-fixmate.html)
-
-~~~
-$ cd ~/data/FlyCURE/scripts
-$ nano fixmate.sh
-~~~
-{: .bash}
-
-~~~
-#!/bin/bash
-
-# what I do: fixmate on bam
-
-# run me in the folder with .bam files (~/data/FlyCURE/results/intermediate_bams)
-
-# $i = each of the .bam files that were created during the first alignment step and are used as the input files
-
-cpu=4
 
 # fix mate loop
-for i in *.nsort.bam; do
+for i in *.sam.gz; do
   echo "fixmate $i"
-  prefix=$(basename $i .nsort.bam)
-  echo samtools fixmate -r -m -@${cpu} ${prefix}.nsort.bam ${prefix}.fixmate.bam &
-  samtools fixmate -r -m -@${cpu} ${prefix}.nsort.bam ${prefix}.fixmate.bam &
+  prefix=$(basename $i .sam.gz)
+  echo samtools fixmate -r -m ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.fixmate.bam &
+  samtools fixmate -r -m ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.fixmate.bam &
 done
 wait
-echo FIXMATE DONE
-~~~
-{: .bash}
 
-Make the script executable and run. This script will take some time to run.
-~~~
-$ chmod +x fixmate.sh
-$ cd ~/data/FlyCURE/results/intermediate_bams
-$ ../../scripts/fixmate.sh
-~~~
-{: .bash}
+# re-sort by coordinate
+for i in *.sam.gz; do
+  echo "coordinate sorting $i"
+  prefix=$(basename $i .sam.gz)
+  echo samtools sort -o ${inter}/${prefix}.csort.bam ${inter}/${prefix}.fixmate.bam &
+  samtools sort -o ${inter}/${prefix}.csort.bam ${inter}/${prefix}.fixmate.bam &
+done
+wait
 
-~~~
-A44.bam          B-2-13_S1.bam          B-2-16_S2.bam          Control.bam          cos2.bam          H22.bam          L31.bam          L-3-2_S3.bam          N-1-1_S4.bam          N-1-4_S5.bam
-A44.fixmate.bam  B-2-13_S1.fixmate.bam  B-2-16_S2.fixmate.bam  Control.fixmate.bam  cos2.fixmate.bam  H22.fixmate.bam  L31.fixmate.bam  L-3-2_S3.fixmate.bam  N-1-1_S4.fixmate.bam  N-1-4_S5.fixmate.bam
-A44.nsort.bam    B-2-13_S1.nsort.bam    B-2-16_S2.nsort.bam    Control.nsort.bam    cos2.nsort.bam    H22.nsort.bam    L31.nsort.bam    L-3-2_S3.nsort.bam    N-1-1_S4.nsort.bam    N-1-4_S5.nsort.bam
-~~~
-{: .output}
+# markdup & remove pcr duplicates loop
+for i in *.sam.gz; do
+  echo "markdup removing dupes $i"
+  prefix=$(basename $i .sam.gz)
+  echo samtools markdup -r ${inter}/${prefix}.csort.bam ${clean}/${prefix}.markdup.bam &
+  samtools markdup -r ${inter}/${prefix}.csort.bam ${clean}/${prefix}.markdup.bam &
+done
+wait
 
+# index loop
+for i in *.sam.gz; do
+  echo "indexing $i"
+  prefix=$(basename $i .sam.gz)
+  echo samtools index ${clean}/${prefix}.markdup.bam &
+  samtools index ${clean}/${prefix}.markdup.bam &
+done
+wait
 
-## Step 4: Re-sort by coordinate
-
-We are going to use samtools sort again, but this time we are going to sort our samples by genomic coordinates.
-
-~~~
-#!/bin/bash
-
-# what I do: sort bam by coordinate (samtools sort)
-
-# run me in the folder with .fixmate.bam files (~/data/FlyCURE/results/intermediate_bams)
-
-# $i = each of the .fixmate.bam files that were created during the first alignment step and are used as the input files
-
-cpu=4
+# what I do:
+# run flagstat on an indexed bam file and write that stat report to a log
 
 # sorting by name loop
-for i in *.fixmate.bam; do
-  echo "coordinate sorting $i"
-  prefix=$(basename $i .fixmate.bam)
-  echo samtools sort -@${cpu} -o ${prefix}.csort.bam ${prefix}.fixmate.bam &
-  samtools sort -@${cpu} -o ${prefix}csort.bam ${prefix}.fixmate.bam &
+for i in *.sam.gz; do
+  echo $index $bam to $log
+  prefix=$(basename $i .sam.gz)
+  echo samtools flagstat ${clean}/${prefix}.markdup.bam \> ${clean}/${prefix}.markdup.flags.log &
+  samtools flagstat ${clean}/${prefix}.markdup.bam > ${clean}/${prefix}.markdup.flags.log &
 done
-wait
-echo COORDINATE SORT DONE
 ~~~
 {: .bash}
 
-I did receive an error message `[W::bam_hdr_read] EOF marker is absent. The input is probably truncated`. This is apparently a known issue with some versions of samtools and likely will not affect the analysis.
-
-![workflow](../img/variant_calling_workflow.png)
-
-### Step 1: Calculate the read coverage of positions in the genome
-
-Do the first pass on variant calling by counting read coverage with
-[bcftools](https://samtools.github.io/bcftools/bcftools.html). We will
-use the command `mpileup`. The flag `-O b` tells bcftools to generate a
-bcf format output file, `-o` specifies where to write the output file, and `-f` flags the path to the reference genome:
-
+Make the script executable, navigate to `bwa_out`, and run the script!
 ~~~
-$ cd ~/data/FlyCURE
-$ bcftools mpileup -O b -o results/bcf/SRR2584866_raw.bcf \
--f ~/data/ref_genome/ecoli_rel606.fasta results/bam/SRR2584866.aligned.sorted.bam
+$ chmod +x bam_factory.sh
+$ cd ~/data/FlyCURE/results/bwa_out
+$ ../../scripts/bam_factory.sh > bam_factory.log &
 ~~~
 {: .bash}
 
-~~~
-[mpileup] 1 samples in 1 input files
-~~~
-{: .output}
-
-We have now generated a file with coverage information for every base.
-
-### Step 2: Detect the single nucleotide polymorphisms (SNPs)
-
-Identify SNPs using bcftools `call`. We have to specify ploidy with the flag `--ploidy`, which is one for the haploid *E. coli*. `-m` allows for multiallelic and rare-variant calling, `-v` tells the program to output variant sites only (not every site in the genome), and `-o` specifies where to write the output file:
+We can watch it's progress by using the following command. Expect this to take a day or overnight to run. If you want to exit tail or the log press `q`. DO NOT FORGET TO RUN YOUR NOTEBOOK WHEN THIS FINISHES.
 
 ~~~
-$ cd ~/data/FlyCURE
-$ bcftools call --ploidy 1 -m -v -o results/bcf/SRR2584866_variants.vcf results/bcf/SRR2584866_raw.bcf
+tail -F bam_factory.log
 ~~~
 {: .bash}
-
-### Step 3: Filter and report the SNP variants in variant calling format (VCF)
-
-Filter the SNPs for the final output in VCF format, using `vcfutils.pl`:
-
-~~~
-$ cd ~/data/dc_workshop/data
-$ vcfutils.pl varFilter results/bcf/SRR2584866_variants.vcf  > results/vcf/SRR2584866_final_variants.vcf
-~~~
-{: .bash}
-
-
-## Explore the VCF format:
-
-~~~
-$ less -S results/vcf/SRR2584866_final_variants.vcf
-~~~
-{: .bash}
-
-You will see the header (which describes the format), the time and date the file was
-created, the version of bcftools that was used, the command line parameters used, and
-some additional information:
-
-~~~
-##fileformat=VCFv4.2
-##FILTER=<ID=PASS,Description="All filters passed">
-##bcftoolsVersion=1.8+htslib-1.8
-##bcftoolsCommand=mpileup -O b -o results/bcf/SRR2584866_raw.bcf -f data/ref_genome/ecoli_rel606.fasta results/bam/SRR2584866.aligned.sorted.bam
-##reference=file://data/ref_genome/ecoli_rel606.fasta
-##contig=<ID=CP000819.1,length=4629812>
-##ALT=<ID=*,Description="Represents allele(s) other than observed.">
-##INFO=<ID=INDEL,Number=0,Type=Flag,Description="Indicates that the variant is an INDEL.">
-##INFO=<ID=IDV,Number=1,Type=Integer,Description="Maximum number of reads supporting an indel">
-##INFO=<ID=IMF,Number=1,Type=Float,Description="Maximum fraction of reads supporting an indel">
-##INFO=<ID=DP,Number=1,Type=Integer,Description="Raw read depth">
-##INFO=<ID=VDB,Number=1,Type=Float,Description="Variant Distance Bias for filtering splice-site artefacts in RNA-seq data (bigger is better)",Version=
-##INFO=<ID=RPB,Number=1,Type=Float,Description="Mann-Whitney U test of Read Position Bias (bigger is better)">
-##INFO=<ID=MQB,Number=1,Type=Float,Description="Mann-Whitney U test of Mapping Quality Bias (bigger is better)">
-##INFO=<ID=BQB,Number=1,Type=Float,Description="Mann-Whitney U test of Base Quality Bias (bigger is better)">
-##INFO=<ID=MQSB,Number=1,Type=Float,Description="Mann-Whitney U test of Mapping Quality vs Strand Bias (bigger is better)">
-##INFO=<ID=SGB,Number=1,Type=Float,Description="Segregation based metric.">
-##INFO=<ID=MQ0F,Number=1,Type=Float,Description="Fraction of MQ0 reads (smaller is better)">
-##FORMAT=<ID=PL,Number=G,Type=Integer,Description="List of Phred-scaled genotype likelihoods">
-##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-##INFO=<ID=ICB,Number=1,Type=Float,Description="Inbreeding Coefficient Binomial test (bigger is better)">
-##INFO=<ID=HOB,Number=1,Type=Float,Description="Bias in the number of HOMs number (smaller is better)">
-##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes for each ALT allele, in the same order as listed">
-##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
-##INFO=<ID=DP4,Number=4,Type=Integer,Description="Number of high-quality ref-forward , ref-reverse, alt-forward and alt-reverse bases">
-##INFO=<ID=MQ,Number=1,Type=Integer,Description="Average mapping quality">
-##bcftools_callVersion=1.8+htslib-1.8
-##bcftools_callCommand=call --ploidy 1 -m -v -o results/bcf/SRR2584866_variants.vcf results/bcf/SRR2584866_raw.bcf; Date=Tue Oct  9 18:48:10 2018
-~~~
-{: .output}
-
-Followed by information on each of the variations observed:
-
-~~~
-#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  results/bam/SRR2584866.aligned.sorted.bam
-CP000819.1      1521    .       C       T       207     .       DP=9;VDB=0.993024;SGB=-0.662043;MQSB=0.974597;MQ0F=0;AC=1;AN=1;DP4=0,0,4,5;MQ=60
-CP000819.1      1612    .       A       G       225     .       DP=13;VDB=0.52194;SGB=-0.676189;MQSB=0.950952;MQ0F=0;AC=1;AN=1;DP4=0,0,6,5;MQ=60
-CP000819.1      9092    .       A       G       225     .       DP=14;VDB=0.717543;SGB=-0.670168;MQSB=0.916482;MQ0F=0;AC=1;AN=1;DP4=0,0,7,3;MQ=60
-CP000819.1      9972    .       T       G       214     .       DP=10;VDB=0.022095;SGB=-0.670168;MQSB=1;MQ0F=0;AC=1;AN=1;DP4=0,0,2,8;MQ=60      GT:PL
-CP000819.1      10563   .       G       A       225     .       DP=11;VDB=0.958658;SGB=-0.670168;MQSB=0.952347;MQ0F=0;AC=1;AN=1;DP4=0,0,5,5;MQ=60
-CP000819.1      22257   .       C       T       127     .       DP=5;VDB=0.0765947;SGB=-0.590765;MQSB=1;MQ0F=0;AC=1;AN=1;DP4=0,0,2,3;MQ=60      GT:PL
-CP000819.1      38971   .       A       G       225     .       DP=14;VDB=0.872139;SGB=-0.680642;MQSB=1;MQ0F=0;AC=1;AN=1;DP4=0,0,4,8;MQ=60      GT:PL
-CP000819.1      42306   .       A       G       225     .       DP=15;VDB=0.969686;SGB=-0.686358;MQSB=1;MQ0F=0;AC=1;AN=1;DP4=0,0,5,9;MQ=60      GT:PL
-CP000819.1      45277   .       A       G       225     .       DP=15;VDB=0.470998;SGB=-0.680642;MQSB=0.95494;MQ0F=0;AC=1;AN=1;DP4=0,0,7,5;MQ=60
-CP000819.1      56613   .       C       G       183     .       DP=12;VDB=0.879703;SGB=-0.676189;MQSB=1;MQ0F=0;AC=1;AN=1;DP4=0,0,8,3;MQ=60      GT:PL
-CP000819.1      62118   .       A       G       225     .       DP=19;VDB=0.414981;SGB=-0.691153;MQSB=0.906029;MQ0F=0;AC=1;AN=1;DP4=0,0,8,10;MQ=59
-CP000819.1      64042   .       G       A       225     .       DP=18;VDB=0.451328;SGB=-0.689466;MQSB=1;MQ0F=0;AC=1;AN=1;DP4=0,0,7,9;MQ=60      GT:PL
-~~~
-{: .output}
-
-This is a lot of information, so let's take some time to make sure we understand our output.
-
-The first few columns represent the information we have about a predicted variation.
-
-| column | info |
-| ------- | ---------- |
-| CHROM | contig location where the variation occurs |
-| POS | position within the contig where the variation occurs |
-| ID | a `.` until we add annotation information |
-| REF | reference genotype (forward strand) |
-| ALT | sample genotype (forward strand) |
-| QUAL | Phred-scaled probability that the observed variant exists at this site (higher is better) |
-| FILTER | a `.` if no quality filters have been applied, PASS if a filter is passed, or the name of the filters this variant failed |
-
-In an ideal world, the information in the `QUAL` column would be all we needed to filter out bad variant calls.
-However, in reality we need to filter on multiple other metrics.
-
-The last two columns contain the genotypes and can be tricky to decode.
-
-| column | info |
-| ------- | ---------- |
-| FORMAT | lists in order the metrics presented in the final column |
-| results | lists the values associated with those metrics in order |
-
-For our file, the metrics presented are GT:PL:GQ.
-
-| metric | definition |
-| ------- | ---------- |
-| GT | the genotype of this sample which for a diploid genome is encoded with a 0 for the REF allele, 1 for the first ALT allele, 2 for the second and so on. So 0/0 means homozygous reference, 0/1 is heterozygous, and 1/1 is homozygous for the alternate allele. For a diploid organism, the GT field indicates the two alleles carried by the sample, encoded by a 0 for the REF allele, 1 for the first ALT allele, 2 for the second ALT allele, etc. |
-| PL | the likelihoods of the given genotypes |
-| GQ | the Phred-scaled confidence for the genotype |
-| AD, DP | the depth per allele by sample and coverage |
-
-The Broad Institute's [VCF guide](https://www.broadinstitute.org/gatk/guide/article?id=1268) is an excellent place
-to learn more about the VCF file format.
 
 > ## Exercise
 >
-> Use the `grep` and `wc` commands you've learned to assess how many variants are in the vcf file.
+> Using the example I provided above for the samtools view `for loop`, breakdown one (or more) of the other `for loops` such as for samtools sort or samtools fixmate. You can define it such as I do and/or replace the variables with a sample > name to help you track what they all stand for.  
 >
 >> ## Solution
 >>
->> ~~~
->> $ grep -v "#" results/vcf/SRR2584866_final_variants.vcf | wc -l
->> ~~~
->> {: .bash}
+>> ![for_loop](../img/samtools_sort.png)
+>> Figure 2: Breakdown of a `for loop` for samtools sort.
 >>
+>> If you were to write the `for loop` for a single sample it would look like this:
 >> ~~~
->> 766
->> ~~~
->> {: .output}
+>> for A44 in A44.sam.gz
+>>     do
+>>     samtools sort -n -o intermediate_bams/A44.nsort.bam intermediate_bams/A44.bam
+>> done
+>> Notice that I did not need to use `basename` because I was using the sample name itself.
 >>
->> There are 766 variants in this file.
 > {: .solution}
 {: .challenge}
-
-## Assess the alignment (visualization) - optional step
-
-It is often instructive to look at your data in a genome browser. Visualization will allow you to get a "feel" for
-the data, as well as detecting abnormalities and problems. Also, exploring the data in such a way may give you
-ideas for further analyses.  As such, visualization tools are useful for exploratory analysis. In this lesson we
-will describe two different tools for visualization: a light-weight command-line based one and the Broad
-Institute's Integrative Genomics Viewer (IGV) which requires
-software installation and transfer of files.
-
-In order for us to visualize the alignment files, we will need to index the BAM file using `samtools`:
-
-~~~
-$ cd ~/data/dc_workshop/data
-$ samtools index results/bam/SRR2584866.aligned.sorted.bam
-~~~
-{: .bash}
-
-### Viewing with `tview`
-
-[Samtools](http://www.htslib.org/) implements a very simple text alignment viewer based on the GNU
-`ncurses` library, called `tview`. This alignment viewer works with short indels and shows [MAQ](http://maq.sourceforge.net/) consensus.
-It uses different colors to display mapping quality or base quality, subjected to users' choice. Samtools viewer is known to work with a 130 GB alignment swiftly. Due to its text interface, displaying alignments over network is also very fast.
-
-In order to visualize our mapped reads, we use `tview`, giving it the sorted bam file and the reference file:
-
-~~~
-$ cd ~/data/dc_workshop/data
-$ samtools tview results/bam/SRR2584866.aligned.sorted.bam ~/data/ref_genome/ecoli_rel606.fasta
-~~~
-{: .bash}
-
-~~~
-1         11        21        31        41        51        61        71        81        91        101       111       121
-AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGCTTCTGAACTGGTTACCTGCCGTGAGTAAATTAAAATTTTATTGACTTAGGTCACTAAATAC
-..................................................................................................................................
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, ..................N................. ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,........................
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, ..................N................. ,,,,,,,,,,,,,,,,,,,,,,,,,,,.............................
-...................................,g,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ....................................   ................
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,....................................   ....................................      ,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ....................................  ,,a,,,,,,,,,,,,,,,,,,,,,,,,,,,,,     .......
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, .............................  ,,,,,,,,,,,,,,,,,g,,,,,    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ...........................T.......   ,,,,,,,,,,,,,,,,,,,,,,,c,          ......
-......................... ................................   ,g,,,,,,,,,,,,,,,,,,,      ...........................
-,,,,,,,,,,,,,,,,,,,,, ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, ,,,,,,,,,,,,,,,,,,,,,,,,,,,       ..........................
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,   ................................T..  ..............................   ,,,,,,
-...........................       ,,,,,,g,,,,,,,,,,,,,,,,,   ....................................         ,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,, ....................................  ...................................        ....
-....................................  ........................  ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,      ....
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,   ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-........................            .................................. .............................     ....
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,   ....................................        ..........................
-...............................       ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, ....................................
-...................................  ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ..................................
-.................................... ,,,,,,,,,,,,,,,,,,a,,,,,,,,,,,,,,,,,        ,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,  ............................ ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-~~~
-{: .output}
-
-The first line of output shows the genome coordinates in our reference genome. The second line shows the reference
-genome sequence. The third line shows the consensus sequence determined from the sequence reads. A `.` indicates
-a match to the reference sequence, so we can see that the consensus from our sample matches the reference in most
-locations. That is good! If that wasn't the case, we should probably reconsider our choice of reference.
-
-Below the horizontal line, we can see all of the reads in our sample aligned with the reference genome. Only
-positions where the called base differs from the reference are shown. You can use the arrow keys on your keyboard
-to scroll or type `?` for a help menu. To navigate to a specific position, type `g`. A dialogue box will appear. In
-this box, type the name of the "chromosome" followed by a colon and the position of the variant you would like to view
-(e.g. for this sample, type `CP000819.1:50` to view the 50th base. Type `Ctrl^C` or `q` to exit `tview`.
-
-> ## Exercise
-> Visualize the alignment of the reads for our `SRR2584866` sample. What variant is present at
-> position 4377265? What is the canonical nucleotide in that position?
->
->> ## Solution
->>
->> ~~~
->> $ samtools tview results/bam/SRR2584866.aligned.sorted.bam ~/data/ref_genome/ecoli_rel606.fasta
->> ~~~
->> {: .bash}
->>
->> Then type `g`. In the dialogue box, type `CP000819.1:4377265`.
->> `G` is the variant. `A` is canonical. This variant possibly changes the phenotype of this sample to hypermutable. It occurs
->> in the gene *mutL*, which controls DNA mismatch repair.
-> {: .solution}
-{: .challenge}
-
-### Viewing with IGV - SKIP
-
-[IGV](http://www.broadinstitute.org/igv/) is a stand-alone browser, which has the advantage of being installed locally and providing fast access. Web-based genome browsers, like [Ensembl](http://www.ensembl.org/index.html) or the [UCSC browser](https://genome.ucsc.edu/), are slower, but provide more functionality. They not only allow for more polished and flexible visualization, but also provide easy access to a wealth of annotations and external data sources. This makes it straightforward to relate your data with information about repeat regions, known genes, epigenetic features or areas of cross-species conservation, to name just a few.
-
-In order to use IGV, we will need to transfer some files to our local machine. We know how to do this with `scp`.
-Open a new tab in your terminal window and create a new folder. We'll put this folder on our Desktop for
-demonstration purposes, but in general you should avoide proliferating folders and files on your Desktop and
-instead organize files within a directory structure like we've been using in our `dc_workshop` directory.
-
-~~~
-$ mkdir ~/Desktop/files_for_igv
-$ cd ~/Desktop/files_for_igv
-~~~
-{: .bash}
-
-Now we will transfer our files to that new directory. Remember to replace the text between the `@` and the `:`
-with your AWS instance number. The commands to `scp` always go in the terminal window that is connected to your
-local computer (not your AWS instance).
-
-~~~
-$ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/results/bam/SRR2584866.aligned.sorted.bam ~/Desktop/files_for_igv
-$ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/results/bam/SRR2584866.aligned.sorted.bam.bai ~/Desktop/files_for_igv
-$ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/data/ref_genome/ecoli_rel606.fasta ~/Desktop/files_for_igv
-$ scp dcuser@ec2-34-203-203-131.compute-1.amazonaws.com:~/dc_workshop/results/vcf/SRR2584866_final_variants.vcf ~/Desktop/files_for_igv
-~~~
-{: .bash}
-
-Next, we need to open the IGV software. If you haven't done so already, you can download IGV from the [Broad Institute's software page](https://www.broadinstitute.org/software/igv/download), double-click the `.zip` file
-to unzip it, and then drag the program into your Applications folder.
-
-1. Open IGV.
-2. Load our reference genome file (`ecoli_rel606.fasta`) into IGV using the **"Load Genomes from File..."** option under the **"Genomes"** pull-down menu.
-3. Load our BAM file (`SRR2584866.aligned.sorted.bam`) using the **"Load from File..."** option under the **"File"** pull-down menu.
-4.  Do the same with our VCF file (`SRR2584866_final_variants.vcf`).
-
-Your IGV browser should look like the screenshot below:
-
-![IGV](../img/igv-screenshot.png)
-
-There should be two tracks: one corresponding to our BAM file and the other for our VCF file.
-
-In the **VCF track**, each bar across the top of the plot shows the allele fraction for a single locus. The second bar shows
-the genotypes for each locus in each *sample*. We only have one sample called here, so we only see a single line. Dark blue =
-heterozygous, Cyan = homozygous variant, Grey = reference.  Filtered entries are transparent.
-
-Zoom in to inspect variants you see in your filtered VCF file to become more familiar with IGV. See how quality information
-corresponds to alignment information at those loci.
-Use [this website](http://software.broadinstitute.org/software/igv/AlignmentData) and the links therein to understand how IGV colors the alignments.
-
-Now that we've run through our workflow for a single sample, we want to repeat this workflow for our other five
-samples. However, we don't want to type each of these individual steps again five more times. That would be very
-time consuming and error-prone, and would become impossible as we gathered more and more samples. Luckily, we
-already know the tools we need to use to automate this workflow and run it on as many files as we want using a
-single line of code. Those tools are: wildcards, for loops, and bash scripts. We'll use all three in the next
-lesson.
-
-> ## Installing Software
->
-> It's worth noting that all of the software we are using for
-> this workshop has been pre-installed on our remote computer.
-> This saves us a lot of time - installing software can be a
-> time-consuming and frustrating task - however, this does mean that
-> you won't be able to walk out the door and start doing these
-> analyses on your own computer. You'll need to install
-> the software first. Look at the [setup instructions](http://www.datacarpentry.org/wrangling-genomics/setup.html) for more information
-> on installing these software packages.
-{: .callout}
-
-> ## BWA Alignment options
-> BWA consists of three algorithms: BWA-backtrack, BWA-SW and BWA-MEM. The first algorithm is designed for Illumina sequence
-> reads up to 100bp, while the other two are for sequences ranging from 70bp to 1Mbp. BWA-MEM and BWA-SW share similar features such
-> as long-read support and split alignment, but BWA-MEM, which is the latest, is generally recommended for high-quality queries as it
-> is faster and more accurate.
-{: .callout}
