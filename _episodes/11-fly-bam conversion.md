@@ -1,5 +1,5 @@
 ---
-title: "Variant Calling Workflow: Converting, Sorting, and Indexing bam files"
+title: "FlyCURE - Variant Calling Workflow: Converting, Sorting, and Indexing bam files"
 teaching: 0
 exercises: 0
 questions:
@@ -108,6 +108,8 @@ A44.bam  B-2-13_S1.bam  B-2-16_S2.bam  Control.bam  cos2.bam  H22.bam  L31.bam  
 
 Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output (`-o`), and then we sort by read names (`-n`). For some reason Jupyter lab can't handle trying to process all the samples at once for this process. As such, we are going to write one for loop and use a `wait` command between each additional loop. The only change in the for loop you will make will be the sample name. Everything else will stay the same. What this will allow, is bam sort will run on a single sample at a time before moving onto the next sample.
 
+[Link to samtools sort](http://www.htslib.org/doc/samtools-sort.html)
+
 ![samtools_sort](../img/samtools_sort.png)
 Figure 2: A break down of the samtools sort command.
 
@@ -188,17 +190,17 @@ SORT DONE
 
 When completed, you should have an `*.nsort.bam` for each of the 10 samples.
 ~~~
-A44.bam        B-2-16_S2.bam        Control.bam        cos2.bam        H22.bam        L31.bam       L-3-2_S3.nsort.bam  N-1-4_S5.bam
-B-2-13_S1.bam  B-2-16_S2.nsort.bam  Control.nsort.bam  cos2.nsort.bam  H22.nsort.bam  L-3-2_S3.bam  N-1-1_S4.bam        N-1-4_S5.nsort.bam
+A44.bam        B-2-13_S1.bam        B-2-16_S2.bam        Control.bam        cos2.bam        H22.bam        L31.bam        L-3-2_S3.bam        N-1-1_S4.bam        N-1-4_S5.bam
+A44.nsort.bam  B-2-13_S1.nsort.bam  B-2-16_S2.nsort.bam  Control.nsort.bam  cos2.nsort.bam  H22.nsort.bam  L31.nsort.bam  L-3-2_S3.nsort.bam  N-1-1_S4.nsort.bam  N-1-4_S5.nsort.bam
 ~~~
 {: .ouptut}
 
 
 ## Step 3: Samtools fixmate
 
-SAM/BAM files can be sorted in multiple ways, e.g. by location of alignment on the chromosome, by read name, etc. It is important to be aware that different alignment tools will output differently sorted SAM/BAM, and different downstream tools require differently sorted alignment files as input.
+SAM/BAM files can be sorted in multiple ways, e.g. by location of alignment on the chromosome, by read name, etc. It is important to be aware that different alignment tools will output differently sorted SAM/BAM, and different downstream tools require differently sorted alignment files as input. The samtools fixmate fills in mate coordinates from the PE reads from name-sorted alignments. We will use the `-m` flag which will be used by the program `markdup` which will select the best reads to keep. We will also use the `-r` flag which will remove any secondary and unmapped reads.
 
-You can use samtools to learn more about this bam file as well.
+[Link to samtools fixmate](http://www.htslib.org/doc/samtools-fixmate.html)
 
 ~~~
 $ cd ~/data/FlyCURE/scripts
@@ -211,66 +213,68 @@ $ nano fixmate.sh
 
 # what I do: fixmate on bam
 
-# run me in the folder with sam.gz files (~/data/FlyCURE/results/bwa_out)
+# run me in the folder with .bam files (~/data/FlyCURE/results/intermediate_bams)
 
-# $i = each of the .sam.gz files that were created during the first alignment step and are used as the input files
+# $i = each of the .bam files that were created during the first alignment step and are used as the input files
 
 cpu=4
 
-inter='../intermediate_bams'
-mkdir -p $inter
-
-clean='../clean_bams'
-mkdir -p $clean
-
 # fix mate loop
-for i in *.sam.gz; do
+for i in *.nsort.bam; do
   echo "fixmate $i"
-  prefix=$(basename $i .sam.gz)
-  echo samtools fixmate -r -m -@${cpu} ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.fixmate.bam &
-  samtools fixmate -r -m -@${cpu} ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.fixmate.bam &
+  prefix=$(basename $i .nsort.bam)
+  echo samtools fixmate -r -m -@${cpu} ${prefix}.nsort.bam ${prefix}.fixmate.bam &
+  samtools fixmate -r -m -@${cpu} ${prefix}.nsort.bam ${prefix}.fixmate.bam &
 done
+wait
+echo FIXMATE DONE
 ~~~
 {: .bash}
 
 Make the script executable and run. This script will take some time to run.
 ~~~
 $ chmod +x fixmate.sh
-$ cd ~/data/FlyCURE/results/bwa_out
+$ cd ~/data/FlyCURE/results/intermediate_bams
 $ ../../scripts/fixmate.sh
 ~~~
 {: .bash}
 
 ~~~
-
+A44.bam          B-2-13_S1.bam          B-2-16_S2.bam          Control.bam          cos2.bam          H22.bam          L31.bam          L-3-2_S3.bam          N-1-1_S4.bam          N-1-4_S5.bam
+A44.fixmate.bam  B-2-13_S1.fixmate.bam  B-2-16_S2.fixmate.bam  Control.fixmate.bam  cos2.fixmate.bam  H22.fixmate.bam  L31.fixmate.bam  L-3-2_S3.fixmate.bam  N-1-1_S4.fixmate.bam  N-1-4_S5.fixmate.bam
+A44.nsort.bam    B-2-13_S1.nsort.bam    B-2-16_S2.nsort.bam    Control.nsort.bam    cos2.nsort.bam    H22.nsort.bam    L31.nsort.bam    L-3-2_S3.nsort.bam    N-1-1_S4.nsort.bam    N-1-4_S5.nsort.bam
 ~~~
 {: .output}
 
-This will give you the following statistics about your sorted bam file:
+
+## Step 4: Re-sort by coordinate
+
+We are going to use samtools sort again, but this time we are going to sort our samples by genomic coordinates.
 
 ~~~
-351169 + 0 in total (QC-passed reads + QC-failed reads)
-0 + 0 secondary
-1169 + 0 supplementary
-0 + 0 duplicates
-351103 + 0 mapped (99.98% : N/A)
-350000 + 0 paired in sequencing
-175000 + 0 read1
-175000 + 0 read2
-346688 + 0 properly paired (99.05% : N/A)
-349876 + 0 with itself and mate mapped
-58 + 0 singletons (0.02% : N/A)
-0 + 0 with mate mapped to a different chr
-0 + 0 with mate mapped to a different chr (mapQ>=5)
-~~~
-{: .output}
-## Variant calling
+#!/bin/bash
 
-A variant call is a conclusion that there is a nucleotide difference vs. some reference at a given position in an individual genome
-or transcriptome, often referred to as a Single Nucleotide Polymorphism (SNP). The call is usually accompanied by an estimate of
-variant frequency and some measure of confidence. Similar to other steps in this workflow, there are a number of tools available for
-variant calling. In this workshop we will be using `bcftools`, but there are a few things we need to do before actually calling the
-variants.
+# what I do: sort bam by coordinate (samtools sort)
+
+# run me in the folder with .fixmate.bam files (~/data/FlyCURE/results/intermediate_bams)
+
+# $i = each of the .fixmate.bam files that were created during the first alignment step and are used as the input files
+
+cpu=4
+
+# sorting by name loop
+for i in *.fixmate.bam; do
+  echo "coordinate sorting $i"
+  prefix=$(basename $i .fixmate.bam)
+  echo samtools sort -@${cpu} -o ${prefix}.csort.bam ${prefix}.fixmate.bam &
+  samtools sort -@${cpu} -o ${prefix}csort.bam ${prefix}.fixmate.bam &
+done
+wait
+echo COORDINATE SORT DONE
+~~~
+{: .bash}
+
+I did receive an error message `[W::bam_hdr_read] EOF marker is absent. The input is probably truncated`. This is apparently a known issue with some versions of samtools and likely will not affect the analysis.
 
 ![workflow](../img/variant_calling_workflow.png)
 

@@ -1,5 +1,5 @@
 ---
-title: "Variant Calling Workflow: Alignment"
+title: "FlyCURE - Variant Calling Workflow: Alignment"
 teaching: 0
 exercises: 0
 questions:
@@ -194,12 +194,10 @@ You will see output that starts like this and this will take a few hours. If you
 ~~~
 {: .output}
 
-Let's compress the files to make them take up less space and our conversions go a little faster by zipping the .sam files. Again, this step is likely to take a few hours. I let mine run overnight.
+Let's compress the files to make them take up less space and our conversions go a little faster by zipping the .sam files. Again, this step is likely to take a few hours. I let mine run overnight. Let's try using `pigz` instead of `gzip`. Both are used to zip files, but `pigz` should do this more quickly as it is a multi-threaded version. The `v` flag will tell it to be verbose while it's running the program.
 
 ~~~
 $ cd ~/data/FlyCURE/results/bwa_out
-$ gzip *.sam \
-> wait \
-> echo SAM DONE
+$ pigz -v *.sam
 ~~~
 {: .bash}
