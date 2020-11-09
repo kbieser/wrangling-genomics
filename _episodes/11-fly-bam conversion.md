@@ -191,6 +191,9 @@ tail -F bam_factory.log
 >>     do
 >>     samtools sort -n -o intermediate_bams/A44.nsort.bam intermediate_bams/A44.bam
 >> done
+>> ~~~
+>> {: .bash}
+>>
 >> Notice that I did not need to use `basename` because I was using the sample name itself.
 >>
 > {: .solution}
