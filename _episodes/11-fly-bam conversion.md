@@ -187,14 +187,15 @@ tail -F bam_factory.log
 >>
 >> If you were to write the `for loop` for a single sample it would look like this:
 >> ~~~
->> for A44 in A44.sam.gz
+>> for A44.sam.gz
 >>     do
 >>     samtools sort -n -o intermediate_bams/A44.nsort.bam intermediate_bams/A44.bam
 >> done
 >> ~~~
 >> {: .bash}
 >>
->> Notice that I did not need to use `basename` because I was using the sample name itself.
+>> Notice that I did not need to use `basename` because I was using the sample name itself. Alternatively, the for loop doesn't even need to be used in this case and you could
+>> just use the samtools sort command directly.
 >>
 > {: .solution}
 {: .challenge}
