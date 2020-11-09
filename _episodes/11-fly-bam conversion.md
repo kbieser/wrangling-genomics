@@ -104,9 +104,9 @@ A44.bam  B-2-13_S1.bam  B-2-16_S2.bam  Control.bam  cos2.bam  H22.bam  L31.bam  
 ~~~
 {: .output}
 
-## Sort BAM file by coordinates
+## Sort BAM file by name
 
-Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output.
+Next we sort the BAM file using the `sort` command from `samtools`. `-o` tells the command where to write the output (`-o`), and then we sort by read names (`-n`). For some reason Jupyter lab can't handle trying to process all the samples at once for this process. As such, we are going to write one for loop and use a `wait` command between each additional loop. The only change in the for loop you will make will be the sample name. Everything else will stay the same. What this will allow, is bam sort will run on a single sample at a time before moving onto the next sample.
 
 ![samtools_sort](../img/samtools_sort.png)
 Figure 2: A break down of the samtools sort command.
@@ -122,66 +122,71 @@ $ nano bam_sort.sh
 
 # what I do: sort bam by name (samtools sort -n)
 
-# run me in the folder with sam.gz files (~/data/FlyCURE/results/bwa_out)
+# run me in the folder with .bam files (~/data/FlyCURE/results/intermediate_bams)
 
-# $i = each of the .sam.gz files that were created during the first alignment step and are used as the input files
+# $i = each of the .bam files that were created during the first alignment step and are used as the input files
 
 cpu=4
 
-inter='../intermediate_bams'
-mkdir -p $inter
-
-clean='../clean_bams'
-mkdir -p $clean
-
 # sorting by name loop
-for i in *.sam.gz; do
+for i in A44.bam; do
   echo "name sorting $i"
-  prefix=$(basename $i .sam.gz)
-  echo samtools sort -n -@${cpu} -o ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.bam &
-  samtools sort -n -@${cpu} -o ${inter}/${prefix}.nsort.bam ${inter}/${prefix}.bam &
+  prefix=$(basename $i .bam)
+  echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+  samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
 done
 wait
+for i in B-2-13_S1.bam; do
+  echo "name sorting $i"
+  prefix=$(basename $i .bam)
+  echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+  samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+done
+wait
+  for i in B-2-16_S2.bam; do
+    echo "name sorting $i"
+    prefix=$(basename $i .bam)
+    echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+    samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+done
+wait
+for i in Control.bam; do
+  echo "name sorting $i"
+  prefix=$(basename $i .bam)
+  echo samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+  samtools sort -n -@${cpu} -o ${prefix}.nsort.bam ${prefix}.bam &
+done
+wait
+# Repeat for the remaining 6 samples to complete this script.
 echo SORT DONE
 ~~~
 {: .bash}
 
-Make the script executable and run. This script will take some time to run. If you open a second terminal and type `top`, you should see `samtools running` once you have deployed the script.
+Make the script executable and run. This script will likely take a few hours. Be patient and wait for the command prompt to return. If you open a second terminal and type `top`, you should see `samtools running` once you have deployed the script.
+
 ~~~
 $ chmod +x bam_sort.sh
-$ cd ~/data/FlyCURE/results/bwa_out
+$ cd ~/data/FlyCURE/results/intermediate_bams
 $ ../../scripts/bam_sort.sh
 ~~~
 {: .bash}
 
 ~~~
-name sorting A44.sam.gz
-name sorting B-2-13_S1.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/A44.nsort.bam ../intermediate_bams/A44.bam
-name sorting B-2-16_S2.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/B-2-13_S1.nsort.bam ../intermediate_bams/B-2-13_S1.bam
-name sorting Control.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/B-2-16_S2.nsort.bam ../intermediate_bams/B-2-16_S2.bam
-name sorting cos2.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/Control.nsort.bam ../intermediate_bams/Control.bam
-name sorting H22.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/cos2.nsort.bam ../intermediate_bams/cos2.bam
-samtools sort -n -@4 -o ../intermediate_bams/H22.nsort.bam ../intermediate_bams/H22.bam
-name sorting L31.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/L31.nsort.bam ../intermediate_bams/L31.bam
-name sorting L-3-2_S3.sam.gz
-[W::bam_hdr_read] EOF marker is absent. The input is probably truncated
-samtools sort -n -@4 -o ../intermediate_bams/L-3-2_S3.nsort.bam ../intermediate_bams/L-3-2_S3.bam
-name sorting N-1-1_S4.sam.gz
-name sorting N-1-4_S5.sam.gz
-samtools sort -n -@4 -o ../intermediate_bams/N-1-1_S4.nsort.bam ../intermediate_bams/N-1-1_S4.bam
-samtools sort -n -@4 -o ../intermediate_bams/N-1-4_S5.nsort.bam ../intermediate_bams/N-1-4_S5.bam
+name sorting A44.bam
+samtools sort -n -@4 -o A44.nsort.bam A44.bam
+[bam_sort_core] merging from 12 files and 4 in-memory blocks...
+name sorting B-2-13_S1.bam
+samtools sort -n -@4 -o B-2-13_S1.nsort.bam B-2-13_S1.bam
 [bam_sort_core] merging from 16 files and 4 in-memory blocks...
+name sorting B-2-16_S2.bam
+samtools sort -n -@4 -o B-2-16_S2.nsort.bam B-2-16_S2.bam
 [bam_sort_core] merging from 16 files and 4 in-memory blocks...
+...
+SORT DONE
 ~~~
 {: .output}
 
-NEED TO CHECK OUTPUT AGAIN
+When completed, you should have an `*.nsort.bam` for each of the 10 samples.
 ~~~
 A44.bam        B-2-16_S2.bam        Control.bam        cos2.bam        H22.bam        L31.bam       L-3-2_S3.nsort.bam  N-1-4_S5.bam
 B-2-13_S1.bam  B-2-16_S2.nsort.bam  Control.nsort.bam  cos2.nsort.bam  H22.nsort.bam  L-3-2_S3.bam  N-1-1_S4.bam        N-1-4_S5.nsort.bam
