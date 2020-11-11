@@ -169,10 +169,10 @@ $ ../../scripts/bam_factory.sh > bam_factory.log &
 ~~~
 {: .bash}
 
-We can watch it's progress by using the following command. Expect this to take a day or overnight to run. If you want to exit tail or the log press `q`. DO NOT FORGET TO RUN YOUR NOTEBOOK WHEN THIS FINISHES.
+The `&` at the ends of the commands just lets the script run in the background so we could continue to use the terminal if we wanted/needed to. This isn't all that important in our JupyterLab environment because we can open another terminal if needed. We can watch the progress of the script by using the command below. Expect this to take a day or overnight to run. If you want to exit tail or the log press `q`. DO NOT FORGET TO RUN YOUR NOTEBOOK WHEN THIS FINISHES.
 
 ~~~
-tail -F bam_factory.log
+$ tail -F bam_factory.log
 ~~~
 {: .bash}
 
