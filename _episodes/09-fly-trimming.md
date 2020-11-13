@@ -13,6 +13,8 @@ keypoints:
 - "Data cleaning is an essential step in a genomics workflow."
 ---
 
+**Launch the app from username/data and RUN CELL ONE OF YOUR PERSISTANCE NOTEBOOK before starting.**
+
 # Cleaning Reads
 
 In the previous lesson, we took a high-level look at the quality
@@ -503,3 +505,5 @@ B-2-13_S1_R2.trim.fastq.gz  Control_R2.trim.fastq.gz    H22_R2.trim.fastq.gz   L
 >>
 > {: .solution}
 {: .challenge}
+
+**RUN CELL TWO OF YOUR PERSISTANCE NOTEBOOK and let it complete before closing.**

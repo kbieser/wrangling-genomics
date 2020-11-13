@@ -199,3 +199,5 @@ $ tail -F bam_factory.log
 >>
 > {: .solution}
 {: .challenge}
+
+**RUN CELL TWO OF YOUR PERSISTANCE NOTEBOOK and let it complete before closing.**

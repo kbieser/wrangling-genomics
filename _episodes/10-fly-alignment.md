@@ -14,6 +14,8 @@ keypoints:
 - "There are many different file formats for storing genomics data. It's important to understand what type of information is contained in each file, and how it was derived."
 ---
 
+**Launch the app from username/data and RUN CELL ONE OF YOUR PERSISTANCE NOTEBOOK before starting.**
+
 We mentioned before that we are working with files from a study of EMS mutated *D. melanogaster*. Now that we have looked at our data to make sure that it is high quality utilizing FASTQC, and removed low-quality base calls, we can start the variant calling steps to identify unique SNPs for each mutant that may be responsible for the mutant phenotype. We will start by aligning each of our samples to the *D. melanogaster* BDGP6.28 reference genome (this it the most recent Ensemble release for *D. melanogaster*), and see what differences exist in our reads versus the reference genome.
 
 # Alignment to a reference genome
@@ -201,3 +203,5 @@ $ cd ~/data/FlyCURE/results/bwa_out
 $ pigz -v *.sam
 ~~~
 {: .bash}
+
+**RUN CELL TWO OF YOUR PERSISTANCE NOTEBOOK and let it complete before closing.**
