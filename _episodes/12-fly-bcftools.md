@@ -141,7 +141,7 @@ I utilize `top` in one terminal to monitor that bcftools is running. I also util
 
 ~~~
 $ cd ~/data/FlyCURE/results/vcfs
-$ pigz *.pileup.vcf
+$ gzip *.pileup.vcf
 ~~~
 {: .bash}
 
