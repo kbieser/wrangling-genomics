@@ -174,7 +174,7 @@ You should see the color change once it is executable. Move into your `fastq_tri
 
 ~~~
 $ cd ~/data/FlyCURE/results/fastq_trimmed
-$ ../../scripts/bwa.sh
+$ ../../scripts/bwa.sh &
 ~~~
 {: .bash}
 

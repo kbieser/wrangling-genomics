@@ -47,7 +47,7 @@ A raw_illumina directory was received directly from the Illumina sequencer. Ther
 Launch your app as you always have with the dataset set to: `/iplant/home/your_username/data`. (Replace the `your_username` with your actual username). Once the app is launched, open and run the first cell of the Persistance Notebook and enter your password. Once that is completed, open the terminal and enter the following commands. Replace `your_username` with your actual username.
 
 ~~~
-$ irysnc -r i:/iplant/home/kbieser/FlyCURE \
+$ irsync -r i:/iplant/home/kbieser/FlyCURE \
 i:/iplant/home/your_username/data/FlyCURE
 ~~~
 {: .bash}
