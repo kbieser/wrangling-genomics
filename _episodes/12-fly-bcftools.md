@@ -48,7 +48,7 @@ This output is the final alignment statistics after completing all of the prior 
 
 We now have the full alignments after running samtools. The next step is to use a program called bcftools.  Bcftools will take the alignment files and produce a list of unique SNPs identified in each of the genomes we are analyzing. The first step will be to run pileup which takes our multiple alignment files (.bam) and generates a VCF containing genotype likelihoods. The second step will be to make variant base calls. Some of the flags we utilize will be program specific while others will be our selections based upon the type of mutation predictions we have. The output file type will be a VCF file which stands for the variant call format.
 
-![Link to bcftools](http://samtools.github.io/bcftools/bcftools.html)
+[Link to bcftools](http://samtools.github.io/bcftools/bcftools.html)
 
 Similar to before, we are going to construct a script containing 2 `for loops`.
 
