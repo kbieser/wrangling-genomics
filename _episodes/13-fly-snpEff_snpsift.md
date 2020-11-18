@@ -22,7 +22,7 @@ We currently have files in the vcf format (variant call format). These are call 
 
 # Upload the bed file to the vcfs directory
 
-I have shared with each of you in Teams, a 2R.bed file. You need to upload this into '~/data/FlyCURE/results/vcfs'. Download and save the 2R.bed file some where on your computer, then move into your Discovery Environment. Follow the steps below to upload the 2R.bed file into your `vcfs` directory. Once you click the "Simple Upload From Desktop" button, navigate to where you saved the 2R.bed file and upload. Once the file is uploaded, you can launch the app from your data directory.
+I have shared with each of you a file in the content library of your OneNote notebook, a 2R.bed file. You need to upload this into '~/data/FlyCURE/results/vcfs'. Download and save the 2R.bed file some where on your computer, then move into your Discovery Environment. Follow the steps below to upload the 2R.bed file into your `vcfs` directory. Once you click the "Simple Upload From Desktop" button, navigate to where you saved the 2R.bed file and upload. Once the file is uploaded, you can launch the app from your data directory.
 
 ![Image of how to upload 2R.bed file](../img/upload_bed.png)
 
@@ -173,5 +173,11 @@ $ cd ~/data/FlyCURE/results/snpeff_bdgp6.86
 $ less A44.uniqID.txt
 ~~~
 {: .bash}
+
+There are two files that land in the vcfs directory. Move them to the snpeff_bdgp6.86 directory. The .html file is neat to look at but doesn't quite get us to the base calls that we need to analyze.
+
+~~~
+$ cd ~/data/FlyCURE/results/vcfs
+$ mv snpEff* ../snpeff_bdgp6.86
 
 **RUN CELL TWO OF YOUR PERSISTANCE NOTEBOOK and let it complete before closing.**
