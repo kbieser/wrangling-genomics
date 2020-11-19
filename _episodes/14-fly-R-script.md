@@ -29,6 +29,7 @@ Download Rstudio:
 The final output of SnpEff and SnpSift generates a number of files. The file we need for our last analysis is the `*.uniqID.txt` for each of the 10 fly stocks. The first step will be to download them to your local machine in a new folder. We will be adding additional files to this folder. I have provided a video in Microsoft Stream describing these steps or follow Figure 1.
 
 ![Figure 1: Steps to move files to local machine from CyVerse](../img/move_files.png)
+Figure 1: Steps to move files to local machine from CyVerse.
 
 # Edit text files
 
@@ -53,6 +54,7 @@ site_eff_uniq_string	A44_CHROM	A44_POS	A44_REF	A44_ALLELE	A44_GENEID	A44_EFFECT	
 {: .output}
 
 ![Figure 2: Steps to edit column headers](../img/edit_text.png)
+Figure 2: Steps to edit column headers in Atom.
 
 # Open and load RStudio script
 
@@ -61,10 +63,13 @@ You should have already installed R and RStudio to your local machine. Additiona
 The next step is to open RStudio and create a New Project (Figure 3). Once the project is created you can open the `snpeff_bdgp6.Rmd` file which will load into your R project.
 
 ![Figure 3: Steps to launch new project in R studio](../img/R_project.png)
+Figure 3: Steps to launch a new project in RStudio.
 
 # Run the RStudio script
 
 The purpose of this R script is to obtain a list of unique SNPs present in each of the mutant fly stocks. The input files for this script will be the text files generated from the SnpSift script that was the last step in our variant calling workflow in JupyterLab. Let's break down what each chunk (the official term in R) of code is doing.
+
+Chunk 1 is just the title of our notebook and it's output format.
 
 ~~~
 ---
@@ -74,7 +79,10 @@ output: html_notebook
 ~~~
 {: .bash}
 
-Chunk 1 is just the title of our notebook and it's output format.
+Chunk 2 are three library's that are loaded into R to conduct our analysis. Below is a brief description of their functions. If R states you need to install updates, please do so.
+  -readr: The goal of 'readr' is to provide a fast and friendly way to read rectangular data (like 'csv', 'tsv', and 'fwf').
+  -dplyr: A package which provides a set of tools for efficiently manipulating datasets in R.
+  -tidyr: Ensures your data is tidy and states every column is a variable, every row is an observation, and every cell is a single value.
 
 ~~~
 ```{r mylibs}
@@ -86,12 +94,9 @@ library(tidyr)
 ~~~
 {: .bash}
 
-Chunk 2 are three library's that are loaded into R to conduct our analysis. Below is a brief description of their functions. If R states you need to install updates, please do so.
-  -readr: The goal of 'readr' is to provide a fast and friendly way to read rectangular data (like 'csv', 'tsv', and 'fwf').
-  -dplyr: A package which provides a set of tools for efficiently manipulating datasets in R.
-  -tidyr: Ensures your data is tidy and states every column is a variable, every row is an observation, and every cell is a single value.
-
 Hit the play button.
+
+Chunk 3 is our data importing chunk. R has an idea of where it is located just like our data structure in the terminal. Thus, if this R script is within the same folder as the `*.uniqID.txt` files, when this chunk is played, it should automatically be able to find the text files. Notice we are using `./` to indicate that the text files are "right here". If you start to receive any errors, one possibility is that your column headers aren't exactly as shown in the previous steps. Each of these chunks are written assuming the text headers as described in order to function.  
 
 ~~~
 ```{r importing}
@@ -110,9 +115,9 @@ frameN14<-read_tsv("./N-1-4_S5.uniqID.txt")
 ~~~
 {: .bash}
 
-Chunk 3 is our data importing chunk. R has an idea of where it is located just like our data structure in the terminal. Thus, if this R script is within the same folder as the `*.uniqID.txt` files, when this chunk is played, it should automatically be able to find the text files. Notice we are using `./` to indicate that the text files are "right here". If you start to receive any errors, one possibility is that your column headers aren't exactly as shown in the previous steps. Each of these chunks are written assuming the text headers as described in order to function.  
-
 Hit the play button.  
+
+Chunk 4. We have named this chunk mega join, because we are joining all of the SNPs that were generated from our previous outputs. We are doing this by using the first column of each file (`site_eff_uniq_string`). This will generate an `all_genic_snps.tsv` file that will display what reference nucleotide (Ref = genomic reference) and mutant nucleotide (Allele = mutant stock) was identified for a specific genomic location from all of the fly stocks. If there is a difference in nucleotides at a specific genomic location, the Ref and Allele columns will display different nucleotides. If no nucleotides are displayed in these columns for a specific fly stock, that means there was no difference in nucleotides between Ref and Allele at those specific locations. This will be a very large file, but you can take a peak at it within R itself. The primary purpose of this step is to organize all of the 10 fly stocks in comparison to one another so that we can pull out only the SNPs that are unique to a single stock.  
 
 ~~~
 ```{r mega_join}
@@ -130,11 +135,12 @@ all_snp_frames <- frameA44 %>%
 ~~~
 {: .bash}
 
-Chunk 4. We have named this chunk mega join, because we are joining all of the SNPs that were generated from our previous outputs. We are doing this by using the first column of each file (`site_eff_uniq_string`). This will generate an `all_genic_snps.tsv` file that will display what reference nucleotide (Ref = genomic reference) and mutant nucleotide (Allele = mutant stock) was identified for a specific genomic location from all of the fly stocks. If there is a difference in nucleotides at a specific genomic location, the Ref and Allele columns will display different nucleotides. If no nucleotides are displayed in these columns for a specific fly stock, that means there was no difference in nucleotides between Ref and Allele at those specific locations. This will be a very large file, but you can take a peak at it within R itself. The primary purpose of this step is to organize all of the 10 fly stocks in comparison to one another so that we can pull out only the SNPs that are unique to a single stock.   
-
-![Figure 4: Steps to launch new project in R studio](../img/all_snps.png)
-
 Hit the play button.
+
+![Figure 4: Example of all snps](../img/all_snps.png)
+Figure 4: Example of how to view the all_snps.
+
+Chunk 5 conducts pair-wise comparisons between the first stock listed (i.e. uniq2_A44) to each of the other 9 fly stocks. This will ultimately generate a list of SNPs that are present only in this particular stock (i.e. mutant stock A44).
 
 ~~~
 ```{r}
@@ -152,9 +158,9 @@ uniq2_N14<-all_snp_frames %>% filter(is.na(Control_POS),is.na(cos2_POS),is.na(H2
 ~~~
 {: .bash}
 
-Chunk 5 conducts pair-wise comparisons between the first stock listed (i.e. uniq2_A44) to each of the other 9 fly stocks. This will ultimately generate a list of SNPs that are present only in this particular stock (i.e. mutant stock A44).
-
 Hit the play button.
+
+Chunk 6 exports the data to a tab-delimited format that you can open in excel using the default prompts. After you hit the play button you should see new files in the folder that the original text files are in. I suggest opening excel and then opening each of the files from there. Give yourself a big pat on the back as you have just finished the bioinformatics analysis pipeline in our quest to identify the causative SNP in each of the fly mutants!
 
 ~~~
 ```{r}
@@ -173,6 +179,6 @@ all_snp_frames %>% write_tsv("./all_genic_snps_all.tsv")
 ~~~
 {: .bash}
 
-Chunk 6 exports the data to a tab-delimited format that you can open in excel using the default prompts. After you hit the play button you should see new files in the folder that the original text files are in. I suggest opening excel and then opening each of the files from there. Give yourself a big pat on the back as you have just finished the bioinformatics analysis pipeline in our quest to identify the causative SNP in each of the fly mutants!
+Hit the play button.
 
 **But now what?!?!**
