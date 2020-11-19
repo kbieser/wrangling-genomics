@@ -14,11 +14,19 @@ keypoints:
 - "There are many different file formats for storing genomics data. It's important to understand what type of information is contained in each file, and how it was derived."
 ---
 
+# Managing data
+
+Prior to launching the app, you will want to move a few directories out of your `~/data` directory in order to make the app function more efficiently. At this point, you may move `fastq_joined`, `fastq_trimmed_orphans`, `fastqc_untrimmed_reads`, and `fastqc_trimmed_reads` out of `~/data` into a new directory you create called `~/your_username/FlyCURE_done` (Figure 1).
+
+![How to move Fly data](../img/move_fly_data.png)
+
+Figure 1: Steps to move data to a new directory.
+
 **Launch the app from username/data and RUN CELL ONE OF YOUR PERSISTANCE NOTEBOOK before starting.**
 
-We mentioned before that we are working with files from a study of EMS mutated *D. melanogaster*. Now that we have looked at our data to make sure that it is high quality utilizing FASTQC, and removed low-quality base calls, we can start the variant calling steps to identify unique SNPs for each mutant that may be responsible for the mutant phenotype. We will start by aligning each of our samples to the *D. melanogaster* BDGP6.28 reference genome (this it the most recent Ensemble release for *D. melanogaster*), and see what differences exist in our reads versus the reference genome.
-
 # Alignment to a reference genome
+
+We mentioned before that we are working with files from a study of EMS mutated *D. melanogaster*. Now that we have looked at our data to make sure that it is high quality utilizing FASTQC, and removed low-quality base calls, we can start the variant calling steps to identify unique SNPs for each mutant that may be responsible for the mutant phenotype. We will start by aligning each of our samples to the *D. melanogaster* BDGP6.28 reference genome (this it the most recent Ensemble release for *D. melanogaster*), and see what differences exist in our reads versus the reference genome.
 
 ![workflow_align](../img/variant_calling_workflow_align.png)
 

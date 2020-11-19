@@ -38,6 +38,14 @@ makes this feasible. Standards ensure that data is stored in a way that is gener
 within the community. The tools that are used to analyze data at different stages of the workflow are therefore
 built under the assumption that the data will be provided in a specific format.  
 
+# Cleaning our data directory
+
+Prior to launching the app, you will want to move a few directories out of your `~/data` directory in order to make the app function more efficiently as we add new data sets. Since will be starting by uploading the FlyCURE data set, we are going to start by moving `.backup`, `dc_workshop`, and `shell_data` out of `~/data` into a new folder you are going to create called `Class_DC_genomics`. By moving these directorys into `~/your_username`, the data and work you have done will still be accessible but won't launch in the app saving both space and time. Follow the steps in Figure 1 to move this data before moving on.
+
+![Steps to move data to new directory](../img/move_data.png)
+
+Figure 1: Steps to move data into a new directory.
+
 # Starting with Data
 
 Often times, the first step in a bioinformatic workflow is getting the data you want to work with onto a computer where you can work with it. If you have outsourced sequencing of your data, the sequencing center will usually provide you with a link that you can use to download your data. Today we will be working with private data shared with you through our Jupyter app as this is still unpublished data.
