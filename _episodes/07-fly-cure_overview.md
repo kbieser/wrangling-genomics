@@ -54,3 +54,7 @@ The primary objective is to utilize a genomics pipeline to identify the causativ
 ![WGS_pipeline](../img/WGS_pipeline.png)
 
 Figure 5: Genomics pipeline to identify the causative SNP in EMS _Drosophila melanogaster_ mutants.
+
+### Funding sources
+The Fly-CURE is supported by NSF IUSE # 2021146.
+The sequencing project described was supported by a grant from the National Institute of General Medical Sciences (GM103440).
