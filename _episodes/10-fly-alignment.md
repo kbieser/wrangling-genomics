@@ -132,7 +132,8 @@ $ nano bwa.sh
 {: .bash}
 
 ~~~
-#!/bin/bash  (this is standard for any script so that we know it is run in bash)
+#!/bin/bash  
+#the bin/bash line is standard for any script so that we know it is run in bash
 # below is our general example
 # bwa mem reference_genome read1.trim.fastq read2.trim.fastq > aligned_PE.sam
 
@@ -146,6 +147,7 @@ $ nano bwa.sh
 This gives us the building blocks or formula to start writing our script. Within the script we are also going to make a new directory where the output will be redirected to.
 
 ~~~
+#!/bin/bash
 # This script expects to be run in the fastq_trimmed directory since that is where our input files are located
 # It also expects the trimmed reads to have suffixes like shown above
 # It also expects the reference genome to be located in the `ref_genome` directory
