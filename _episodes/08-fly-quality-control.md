@@ -439,9 +439,9 @@ will move these
 output files into a new directory within our `results/` directory.
 
 ~~~
-$ mkdir -p ~/data/Fly_CURE/results/fastqc_untrimmed_reads
-$ mv *.zip ~/data/Fly_CURE/results/fastqc_untrimmed_reads/
-$ mv *.html ~/data/Fly_CURE/results/fastqc_untrimmed_reads/
+$ mkdir -p ~/data/FlyCURE/results/fastqc_untrimmed_reads
+$ mv *.zip ~/data/FlyCURE/results/fastqc_untrimmed_reads/
+$ mv *.html ~/data/FlyCURE/results/fastqc_untrimmed_reads/
 ~~~
 {: .bash}
 
@@ -449,7 +449,7 @@ Now we can navigate into this results directory and do some closer
 inspection of our output files.
 
 ~~~
-$ cd ~/data/Fly_CURE/results/fastqc_untrimmed_reads/
+$ cd ~/data/FlyCURE/results/fastqc_untrimmed_reads/
 ~~~
 {: .bash}
 
