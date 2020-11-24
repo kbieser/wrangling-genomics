@@ -370,6 +370,8 @@ trimmomatic PE -threads 8 \
 
 Once it is copied in you are now going to convert it to a for loop by replacing the explicit parts with variables. Running trimmomatic on all 10 genomes takes awhile. Mine took 2-3 hours.
 
+As a tip to view the progress and make sure it is running, you can do a few things. In a new terminal you can type the `top` command and you should see `trimmomatic` and `trim.sh` in the list. What I found more helpful is to watch file sizes change. Navigate to `fastq_joined` and type `ls -lh`. What this will do is show you that the .trim and .orphan files are being generated and that the file sizes of these should change over time. If you refresh the command over time you will see new files being created and the file sizes changing. Once trimomatic is complete, you can view `fastq_trimmed` and `fastq_trimmed_orphans` and the files should be there if you built the mkdir and mv commands into your script.  
+
 > ## Exercise
 > Using the steps we tested above, create a script and for loop to run trimmomatic on all of our fastq files. Since you have the trimmomatic command pasted into nano, comment out each line and use it to help you build the for loop. Save the text file as trim.sh and move to your scripts directory. If you really want to challenge yourself, you can add in commands to make a new fastq_trimmed/ and move the .trim and .orphan files to there own new directory's all within the script. Comment out notes within the text to help yourself. Don't forget you have to make the script executable in order to run it. Run the script.  
 >
@@ -451,7 +453,7 @@ Once it is copied in you are now going to convert it to a for loop by replacing 
 >> TrimmomaticPE: Completed successfully
 >> ~~~
 >> {: .output}
->>
+>> You will need to see 10 `TrimmomaticPE: Completed successfully` to know that it was run on all 10 samples.
 > {: .solution}
 {: .challenge}
 
@@ -502,7 +504,7 @@ B-2-13_S1_R2.trim.fastq.gz  Control_R2.trim.fastq.gz    H22_R2.trim.fastq.gz   L
 >> $ ../../scripts/fastqc_trimmed.sh &
 >> ~~~
 >> {: .bash}
->>
+>> Again, `top` should show that `fastqc_trimmed` is running and the terminal where the script is running will show you that the analysis >> has started. Any other message indicates an error. 
 > {: .solution}
 {: .challenge}
 
