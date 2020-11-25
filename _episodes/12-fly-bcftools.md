@@ -101,7 +101,7 @@ Similar to before, we are going to construct a script containing 2 `for loops`.
 >> ~~~
 >> # Run me in clean_bams where the *.markdup.bam files are
 >>
->> outdir=`../vcfs`
+>> outdir='../vcfs'
 >> mkdir -p $outdir
 >>
 >> # loop #1 bcftools mpileup
