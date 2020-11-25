@@ -139,6 +139,41 @@ Similar to before, we are going to construct a script containing 2 `for loops`.
 
 I utilize `top` in one terminal to monitor that bcftools is running. I also utilize a second terminal to occasionally use `ls -lh` to see that files are being created and that the file sizes are changing. Lastly, to reduce file size, zip your *.pileup.vcf once all the processes have completed.
 
+When the script is finished here is what you should see.
+~~~
+$ ~/data/FlyCURE/results/vcfs
+$ ls -lh
+~~~
+{: .bash}
+
+~~~
+total 33G
+-rw-r--r-- 1 gea_user gea_user   15 Nov 23 19:23 2R.bed
+-rw-r--r-- 1 gea_user gea_user 110M Nov 23 19:23 A44.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 2.8G Nov 23 19:23 A44.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 119M Nov 23 19:24 B-2-13_S1.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:24 B-2-13_S1.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 116M Nov 23 19:24 B-2-16_S2.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.0G Nov 23 19:25 B-2-16_S2.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 117M Nov 23 19:25 Control.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.0G Nov 23 19:26 Control.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 132M Nov 23 19:31 cos2.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.3G Nov 23 19:31 cos2.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 128M Nov 23 19:26 H22.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.4G Nov 23 19:27 H22.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 125M Nov 23 19:28 L31.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.3G Nov 23 19:29 L31.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 125M Nov 23 19:27 L-3-2_S3.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:28 L-3-2_S3.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 121M Nov 23 19:29 N-1-1_S4.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:30 N-1-1_S4.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 118M Nov 23 19:30 N-1-4_S5.calls.vcf
+-rw-r--r-- 1 gea_user gea_user 3.2G Nov 23 19:31 N-1-4_S5.pileup.vcf.gz
+-rw-r--r-- 1 gea_user gea_user 316K Nov 23 19:32 snpEff_genes.txt
+-rw-r--r-- 1 gea_user gea_user 308K Nov 23 19:32 snpEff_summary.html
+~~~
+{: .output}
+
 ~~~
 $ cd ~/data/FlyCURE/results/vcfs
 $ gzip *.pileup.vcf
