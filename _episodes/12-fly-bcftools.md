@@ -21,7 +21,7 @@ Let's first review the outputs from our bam_factory script.
 
 ~~~
 $ cd ~/data/FlyCURE/results/clean_bams
-$ less A44.markdup.flags.logs
+$ less A44.markdup.flags.log
 ~~~
 {: .bash}
 
