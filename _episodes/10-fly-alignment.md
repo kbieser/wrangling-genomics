@@ -20,7 +20,7 @@ Prior to launching the app, you will want to move a few directories out of your 
 
 ![How to move Fly data](../img/move_fly_data.png)
 
-Figure 1: Steps to move data to a new directory.
+Figure 1: Steps to move data to a new directory. Click on your username when you create the new directory.
 
 **Launch the app from username/data and RUN CELL ONE OF YOUR PERSISTANCE NOTEBOOK before starting.**
 
