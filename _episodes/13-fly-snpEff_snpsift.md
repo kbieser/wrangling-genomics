@@ -179,5 +179,7 @@ There are two files that land in the vcfs directory. Move them to the snpeff_bdg
 ~~~
 $ cd ~/data/FlyCURE/results/vcfs
 $ mv snpEff* ../snpeff_bdgp6.86
+~~~
+{: .bash}
 
 **RUN CELL TWO OF YOUR PERSISTANCE NOTEBOOK and let it complete before closing.**
