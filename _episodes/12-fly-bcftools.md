@@ -169,8 +169,6 @@ total 33G
 -rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:30 N-1-1_S4.pileup.vcf.gz
 -rw-r--r-- 1 gea_user gea_user 118M Nov 23 19:30 N-1-4_S5.calls.vcf
 -rw-r--r-- 1 gea_user gea_user 3.2G Nov 23 19:31 N-1-4_S5.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 316K Nov 23 19:32 snpEff_genes.txt
--rw-r--r-- 1 gea_user gea_user 308K Nov 23 19:32 snpEff_summary.html
 ~~~
 {: .output}
 
