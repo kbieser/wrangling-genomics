@@ -137,41 +137,43 @@ Similar to before, we are going to construct a script containing 2 `for loops`.
 > {: .solution}
 {: .challenge}
 
-I utilize `top` in one terminal to monitor that bcftools is running. I also utilize a second terminal to occasionally use `ls -lh` to see that files are being created and that the file sizes are changing. Lastly, to reduce file size, zip your *.pileup.vcf once all the processes have completed.
+This will likely take a few hours (4+) to run. I utilize `top` in one terminal to monitor that bcftools is running. I also utilize a second terminal to occasionally use `ls -lh` to see that files are being created and that the file sizes are changing. Once your output looks like the image below, you may proceed to reduce the file sizes, by zipping your `*.pileup.vcf`.
 
-When the script is finished here is what you should see.
 ~~~
 $ ~/data/FlyCURE/results/vcfs
 $ ls -lh
 ~~~
 {: .bash}
 
+When the script is finished here is what you should see. In `top`, bcftools will no longer be present.
+
 ~~~
-total 33G
--rw-r--r-- 1 gea_user gea_user   15 Nov 23 19:23 2R.bed
--rw-r--r-- 1 gea_user gea_user 110M Nov 23 19:23 A44.calls.vcf
--rw-r--r-- 1 gea_user gea_user 2.8G Nov 23 19:23 A44.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 119M Nov 23 19:24 B-2-13_S1.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:24 B-2-13_S1.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 116M Nov 23 19:24 B-2-16_S2.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.0G Nov 23 19:25 B-2-16_S2.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 117M Nov 23 19:25 Control.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.0G Nov 23 19:26 Control.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 132M Nov 23 19:31 cos2.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.3G Nov 23 19:31 cos2.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 128M Nov 23 19:26 H22.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.4G Nov 23 19:27 H22.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 125M Nov 23 19:28 L31.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.3G Nov 23 19:29 L31.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 125M Nov 23 19:27 L-3-2_S3.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:28 L-3-2_S3.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 121M Nov 23 19:29 N-1-1_S4.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.1G Nov 23 19:30 N-1-1_S4.pileup.vcf.gz
--rw-r--r-- 1 gea_user gea_user 118M Nov 23 19:30 N-1-4_S5.calls.vcf
--rw-r--r-- 1 gea_user gea_user 3.2G Nov 23 19:31 N-1-4_S5.pileup.vcf.gz
+total 166G
+-rw-r--r-- 1 gea_user gea_user   15 Dec  1 00:44 2R.bed
+-rw-r--r-- 1 gea_user gea_user 110M Dec  1 22:59 A44.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  16G Dec  1 21:45 A44.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 119M Dec  1 22:59 B-2-13_S1.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:17 B-2-13_S1.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 116M Dec  1 22:58 B-2-16_S2.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:12 B-2-16_S2.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 117M Dec  1 22:59 Control.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 21:53 Control.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 132M Dec  1 23:00 cos2.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:19 cos2.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 128M Dec  1 22:59 H22.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:31 H22.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 125M Dec  1 22:59 L31.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:23 L31.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 125M Dec  1 22:59 L-3-2_S3.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:25 L-3-2_S3.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 121M Dec  1 22:59 N-1-1_S4.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:19 N-1-1_S4.pileup.vcf
+-rw-r--r-- 1 gea_user gea_user 118M Dec  1 22:59 N-1-4_S5.calls.vcf
+-rw-r--r-- 1 gea_user gea_user  17G Dec  1 22:23 N-1-4_S5.pileup.vcf
 ~~~
 {: .output}
 
+Reduce file size by zipping the `*.pileup.vcf`. Again, this will take some time. 
 ~~~
 $ cd ~/data/FlyCURE/results/vcfs
 $ gzip *.pileup.vcf

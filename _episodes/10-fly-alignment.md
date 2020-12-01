@@ -214,4 +214,21 @@ $ gzip -v *.sam
 ~~~
 {: .bash}
 
+The final output should look like this.
+
+~~~
+total 40G
+-rw-r--r-- 1 gea_user gea_user 2.6G Nov 30 23:44 A44.sam.gz
+-rw-r--r-- 1 gea_user gea_user 3.8G Nov 30 23:47 B-2-13_S1.sam.gz
+-rw-r--r-- 1 gea_user gea_user 3.7G Nov 30 23:49 B-2-16_S2.sam.gz
+-rw-r--r-- 1 gea_user gea_user 3.4G Nov 30 23:52 Control.sam.gz
+-rw-r--r-- 1 gea_user gea_user 4.6G Dec  1 00:10 cos2.sam.gz
+-rw-r--r-- 1 gea_user gea_user 4.9G Nov 30 23:55 H22.sam.gz
+-rw-r--r-- 1 gea_user gea_user 4.8G Dec  1 00:01 L31.sam.gz
+-rw-r--r-- 1 gea_user gea_user 4.0G Nov 30 23:58 L-3-2_S3.sam.gz
+-rw-r--r-- 1 gea_user gea_user 3.9G Dec  1 00:04 N-1-1_S4.sam.gz
+-rw-r--r-- 1 gea_user gea_user 4.1G Dec  1 00:07 N-1-4_S5.sam.gz
+~~~
+{: .output}
+
 **RUN CELL TWO OF YOUR PERSISTANCE NOTEBOOK and let it complete before closing.**

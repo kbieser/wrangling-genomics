@@ -176,6 +176,42 @@ $ tail -F bam_factory.log
 ~~~
 {: .bash}
 
+Completed file sizes when checked with `ls -lh`.
+~~~
+total 30G
+-rw-r--r-- 1 gea_user gea_user 2.1G Dec  1 00:11 A44.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 548K Dec  1 00:11 A44.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:11 A44.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 2.9G Dec  1 00:11 B-2-13_S1.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 549K Dec  1 00:11 B-2-13_S1.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:11 B-2-13_S1.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 2.7G Dec  1 00:12 B-2-16_S2.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 551K Dec  1 00:12 B-2-16_S2.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:12 B-2-16_S2.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 2.7G Dec  1 00:12 Control.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 551K Dec  1 00:12 Control.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:12 Control.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 3.5G Dec  1 00:15 cos2.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 551K Dec  1 00:16 cos2.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:16 cos2.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 3.9G Dec  1 00:13 H22.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 553K Dec  1 00:13 H22.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:13 H22.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 3.7G Dec  1 00:14 L31.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 552K Dec  1 00:14 L31.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:14 L31.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 3.0G Dec  1 00:13 L-3-2_S3.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 549K Dec  1 00:13 L-3-2_S3.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:13 L-3-2_S3.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 2.9G Dec  1 00:14 N-1-1_S4.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 550K Dec  1 00:15 N-1-1_S4.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:15 N-1-1_S4.markdup.flags.log
+-rw-r--r-- 1 gea_user gea_user 3.0G Dec  1 00:15 N-1-4_S5.markdup.bam
+-rw-r--r-- 1 gea_user gea_user 550K Dec  1 00:15 N-1-4_S5.markdup.bam.bai
+-rw-r--r-- 1 gea_user gea_user  443 Dec  1 00:15 N-1-4_S5.markdup.flags.log
+~~~
+{: .output}
+
 > ## Exercise
 >
 > Using the example I provided above for the samtools view `for loop`, breakdown one (or more) of the other `for loops` such as for samtools sort or samtools fixmate. You can define it such as I do and/or replace the variables with a sample > name to help you track what they all stand for.  
